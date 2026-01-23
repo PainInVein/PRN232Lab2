@@ -21,7 +21,24 @@ namespace PRN232.NMS.Services
                 throw new Exception(ex.Message + "\n");
             }
             return null;
-
         }
+
+        public async Task<(List<Tag> Items, int TotalItems)> GetTagsPagedAsync(int page, int pageSize)
+        {
+            try
+            {
+                var items = await _unitOfWork.TagRepository
+                    .GetAllSimpleAsync((page - 1) * pageSize, pageSize);
+
+                var totalItems = await _unitOfWork.TagRepository.CountAsync();
+
+                return (items, totalItems);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
+
     }
 }

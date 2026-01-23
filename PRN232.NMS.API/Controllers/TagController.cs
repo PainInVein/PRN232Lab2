@@ -32,5 +32,27 @@ namespace PRN232.NMS.API.Controllers
             }
             return NotFound(new ResponseDTO<GetByIdResponse>(message: "Tag not found", isSuccess: false, data: null, errors: null));
         }
+
+        [HttpGet("api/tags")]
+        public async Task<IActionResult> GetAllTags([FromQuery] PagedRequest pagedRequest)
+        {
+            var pagedTags = await _tagService.GetTagsPagedAsync(pagedRequest.Page, pagedRequest.PageSize);
+            var mappedTags = _mapper.Map<List<GetAllResponse>>(pagedTags.Items);
+
+            var pagedResponse = new PagedResult<GetAllResponse>
+            {
+                Items = mappedTags,
+                Page = pagedRequest.Page,
+                PageSize = pagedRequest.PageSize,
+                TotalItems = pagedTags.TotalItems,
+                TotalPages = (int)Math.Ceiling(pagedTags.TotalItems / (double)pagedRequest.PageSize)
+            };
+
+
+            var response = new ResponseDTO<PagedResult<GetAllResponse>>(message: "Tags retrieved successfully", isSuccess: true, data: pagedResponse, errors: null);
+
+            return Ok(response);
+        }
+
     }
 }

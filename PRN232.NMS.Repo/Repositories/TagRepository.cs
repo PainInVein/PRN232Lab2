@@ -141,19 +141,27 @@ namespace PRN232.NMS.Repo.Repositories
         }
 
         // Optional: very lightweight version without articles
-        //public async Task<List<Tag>> GetAllSimpleAsync()
-        //{
-        //    var items = await _context.Tags
-        //        .Select(t => new Tag
-        //        {
-        //            TagId = t.TagId,
-        //            TagName = t.TagName,
-        //            Note = t.Note,
-        //            // NewsArticles = new List<NewsArticle>()   ← empty collection
-        //        })
-        //        .ToListAsync();
+        public async Task<List<Tag>> GetAllSimpleAsync(int skip, int take)
+        {
+            var items = await _context.Tags
+                .Select(t => new Tag
+                {
+                    TagId = t.TagId,
+                    TagName = t.TagName,
+                    Note = t.Note,
+                })
+                .Skip(skip)
+                .Take(take)
+                .ToListAsync();
 
-        //    return items ?? new List<Tag>();
-        //}
+            return items ?? new List<Tag>();
+        }
+
+        public async Task<int> CountAsync()
+        {
+            var result = await _context.Tags.CountAsync();
+
+            return result;
+        }
     }
 }

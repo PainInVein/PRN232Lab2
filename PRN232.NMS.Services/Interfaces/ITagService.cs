@@ -10,5 +10,7 @@ namespace PRN232.NMS.Services.Interfaces
     public interface ITagService
     {
         Task<Tag> GetByIdAsync(int id);
+
+        Task<(List<Tag> Items, int TotalItems)> GetTagsPagedAsync(int page, int pageSize);
     }
 }

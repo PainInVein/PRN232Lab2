@@ -17,6 +17,8 @@ namespace PRN232.NMS.API.Models.MappingTool
                        opt => opt.MapFrom(src => src.NewsArticles));
 
             CreateMap<NewsArticle, RelatedNewsArticleResponse>();
+
+            CreateMap<Tag, GetAllResponse>();
         }
     }
 }
