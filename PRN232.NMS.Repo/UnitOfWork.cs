@@ -23,7 +23,7 @@ namespace Repositories
         {
             get
             {
-                return _systemAccountRepository ?? new SystemAccountRepository(_context);
+                return _systemAccountRepository ??= new SystemAccountRepository(_context);
             }
         }
 
@@ -31,7 +31,7 @@ namespace Repositories
         {
             get
             {
-                return _tagRepository ?? new TagRepository(_context);
+                return _tagRepository ??= new TagRepository(_context);
             }
         }
 

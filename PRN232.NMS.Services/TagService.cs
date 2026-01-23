@@ -14,7 +14,7 @@ namespace PRN232.NMS.Services
         {
             try
             {
-                return await _unitOfWork.TagRepository.GetByIdAsync(id);
+                return await _unitOfWork.TagRepository.GetByTagIdAsync(id);
             }
             catch (Exception ex)
             {

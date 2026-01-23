@@ -16,7 +16,7 @@ namespace PRN232.NMS.Repo.Repositories
 
         public TagRepository(Prn312classDbContext context) : base(context) { }
 
-        public async Task<Tag> GetByIdAsync(int id)
+        public async Task<Tag> GetByTagIdAsync(int id)
         {
             var tag = await _context.Tags
                 .Where(t => t.TagId == id)

@@ -11,7 +11,7 @@ namespace PRN232.NMS.Repo.Repositories
 
         public NewsArticleRepository(Prn312classDbContext context) : base(context) { }
 
-        public async Task<List<NewsArticle>> GetAllAsync()
+        public async Task<List<NewsArticle>> GetAllArticleAsync()
         {
             var items = await _context.NewsArticles
                 .Select(a => new NewsArticle
@@ -63,7 +63,7 @@ namespace PRN232.NMS.Repo.Repositories
             return items ?? new List<NewsArticle>();
         }
 
-        public async Task<NewsArticle> GetByIdAsync(int id)
+        public async Task<NewsArticle> GetArticleByIdAsync(int id)
         {
             var article = await _context.NewsArticles
                 .Where(a => a.NewsArticleId == id)
