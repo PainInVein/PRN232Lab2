@@ -19,4 +19,8 @@
     <ProjectReference Include="..\PRN232.NMS.Services\PRN232.NMS.Services.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Models\RequestModels\TagRequests\" />
+  </ItemGroup>
+
 </Project>

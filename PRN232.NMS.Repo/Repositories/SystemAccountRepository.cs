@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using PRN232.NMS.Repo.DBContext;
 using PRN232.NMS.Repo.EntityModels;
 
-namespace Repositories.Repositories
+namespace PRN232.NMS.Repo.Repositories
 {
     public class SystemAccountRepository : GenericRepository<SystemAccount>
     {
