@@ -501,3 +501,4 @@ appsettings.*.json
 
 *-firebase-adminsdk-*.json
 /EV.Presentation/appsettings.json
+/PRN232.NMS.API/appsettings.json
