@@ -9,14 +9,14 @@ namespace PRN232.NMS.Services.Interfaces
 {
     public interface ITagService
     {
-        Task<Tag> GetByIdAsync(int id);
+        Task<Tag?> GetByIdAsync(int id);
 
         Task<(List<Tag> Items, int TotalItems)> GetTagsPagedAsync(int page, int pageSize, string? searchTerm, string? sortOption, List<int>? newArticleIds);
 
         Task CreateTagAsync(Tag tag);
 
-        Task DeleteTagAsync(int id);
+        Task<string> DeleteTagAsync(int id);
 
-        Task UpdateTagAsync(int id, Tag updatedTag);
+        Task<string> UpdateTagAsync(int id, Tag updatedTag);
     }
 }
