@@ -10,7 +10,7 @@ namespace PRN232.NMS.Services
 
         public TagService() => _unitOfWork ??= new UnitOfWork();
 
-        public async Task<Tag> GetByIdAsync(int id)
+        public async Task<Tag?> GetByIdAsync(int id)
         {
             try
             {
@@ -45,20 +45,22 @@ namespace PRN232.NMS.Services
             
         }
 
-        public async Task DeleteTagAsync(int id)
+        public async Task<string> DeleteTagAsync(int id)
         {
             var tag = await _unitOfWork.TagRepository.GetByIdAsync(id);
-            if (tag == null) throw new KeyNotFoundException("Article not found");
+            if (tag == null) return "Tag not found";
             _unitOfWork.TagRepository.Remove(tag);
+            return string.Empty;
         }
 
-        public async Task UpdateTagAsync(int id, Tag updatedTag)
+        public async Task<string> UpdateTagAsync(int id, Tag updatedTag)
         {
             var existingTag = await _unitOfWork.TagRepository.GetByIdAsync(id);
-            if (existingTag == null) throw new KeyNotFoundException("Tag not found");
+            if (existingTag == null) return "Tag not found";
             existingTag.TagName = updatedTag.TagName;
             existingTag.Note = updatedTag.Note;
             _unitOfWork.TagRepository.Update(existingTag);
+            return string.Empty;
         }
     }
 }

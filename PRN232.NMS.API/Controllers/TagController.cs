@@ -30,14 +30,21 @@ namespace PRN232.NMS.API.Controllers
         [HttpGet("{id}")]
         public async Task<IActionResult> GetTagById(int id)
         {
-            var tag = await _tagService.GetByIdAsync(id);
-            if (tag != null)
+            try
             {
-                var mappedTag = _mapper.Map<GetByIdResponse>(tag);
-                var response = new ResponseDTO<GetByIdResponse>(message: "Tag retrieved successfully", isSuccess: true, data: mappedTag, errors: null);
-                return Ok(response);
+                var tag = await _tagService.GetByIdAsync(id);
+                if (tag != null)
+                {
+                    var mappedTag = _mapper.Map<GetByIdResponse>(tag);
+                    var response = new ResponseDTO<GetByIdResponse>(message: "Tag retrieved successfully", isSuccess: true, data: mappedTag, errors: null);
+                    return Ok(response);
+                }
+                return NotFound(new ResponseDTO<GetByIdResponse>(message: "Tag not found", isSuccess: false, data: null, errors: null));
+            }catch(Exception e)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, new ResponseDTO<object>($"Tag retrieval failed: {e.Message}", false, null, null));
             }
-            return NotFound(new ResponseDTO<GetByIdResponse>(message: "Tag not found", isSuccess: false, data: null, errors: null));
+            
         }
 
         [HttpGet]
@@ -66,10 +73,19 @@ namespace PRN232.NMS.API.Controllers
         {
             var mappedRequest = _mapper.Map<Tag>(createTagRequest);
 
-            await _tagService.CreateTagAsync(mappedRequest);
+            try
+            {
+                await _tagService.CreateTagAsync(mappedRequest);
 
-            // Implementation for creating a tag would go here
-            return StatusCode(201, new ResponseDTO<object>("Tag created successfully", true, null, null));
+                // Implementation for creating a tag would go here
+                return StatusCode(201, new ResponseDTO<object>("Tag created successfully", true, null, null));
+            }
+            catch(Exception e)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, new ResponseDTO<object>($"Tag creation failed: {e.Message}", false, null, null));
+            }
+
+            
         }
 
         [HttpDelete("{id}")]
@@ -77,30 +93,39 @@ namespace PRN232.NMS.API.Controllers
         {
             try
             {
-                await _tagService.DeleteTagAsync(id);
+                var result = await _tagService.DeleteTagAsync(id);
+
+                if(result != string.Empty)
+                {
+                    return NotFound(new ResponseDTO<object>($"Tag deletion failed: {result}", false, null, null));
+                }
+
                 return Ok(new ResponseDTO<object>("Tag deleted successfully", true, null, null));
             }
-            catch (KeyNotFoundException)
+            catch (Exception e)
             {
-                return NotFound(new ResponseDTO<object>("Tag not found", false, null, null));
+                return StatusCode(StatusCodes.Status500InternalServerError, new ResponseDTO<object>($"Tag deletion failed: {e.Message}", false, null, null));
             }
         }
 
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(int id, [FromBody] UpdateTagRequest request)
         {
-            
-
             try
             {
                 var entity = _mapper.Map<Tag>(request);
+                var result = await _tagService.UpdateTagAsync(id, entity);
 
-                await _tagService.UpdateTagAsync(id, entity);
+                if (result != string.Empty)
+                {
+                    return NotFound(new ResponseDTO<object>($"Tag modification failed: {result}", false, null, null));
+                }
+
                 return Ok(new ResponseDTO<object>("Tag updated successfully", true, null, null));
             }
-            catch (KeyNotFoundException)
+            catch (Exception e)
             {
-                return NotFound(new ResponseDTO<object>("Tag not found", false, null, null));
+                return StatusCode(StatusCodes.Status500InternalServerError, new ResponseDTO<object>($"Tag modification failed: {e.Message}", false, null, null));
             }
             
         }
