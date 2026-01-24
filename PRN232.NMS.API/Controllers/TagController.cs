@@ -1,12 +1,19 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PRN232.NMS.API.Models.RequestModels;
+using PRN232.NMS.API.Models.RequestModels.NewsArticleRequests;
+using PRN232.NMS.API.Models.RequestModels.TagRequests;
 using PRN232.NMS.API.Models.ResponseModels;
 using PRN232.NMS.API.Models.ResponseModels.TagResponses;
+using PRN232.NMS.Repo.EntityModels;
 using PRN232.NMS.Services.Interfaces;
+using System.Security.Claims;
 
 namespace PRN232.NMS.API.Controllers
 {
+    [Route("api/tags")]
+    [ApiController]
     public class TagController : ControllerBase
     {
         private readonly ITagService _tagService;
@@ -20,8 +27,8 @@ namespace PRN232.NMS.API.Controllers
             _modelStateCheck = modelStateCheck;
         }
 
-        [HttpPost("api/tags/{id}")]
-        public async Task<IActionResult> GetTagById([FromRoute] int id)
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetTagById(int id)
         {
             var tag = await _tagService.GetByIdAsync(id);
             if (tag != null)
@@ -33,19 +40,19 @@ namespace PRN232.NMS.API.Controllers
             return NotFound(new ResponseDTO<GetByIdResponse>(message: "Tag not found", isSuccess: false, data: null, errors: null));
         }
 
-        [HttpGet("api/tags")]
-        public async Task<IActionResult> GetAllTags([FromQuery] PagedRequest pagedRequest)
+        [HttpGet]
+        public async Task<IActionResult> GetAllTags([FromQuery] TagFilterRequest tagFilterRequest)
         {
-            var pagedTags = await _tagService.GetTagsPagedAsync(pagedRequest.Page, pagedRequest.PageSize);
+            var pagedTags = await _tagService.GetTagsPagedAsync(tagFilterRequest.Page, tagFilterRequest.PageSize, tagFilterRequest.SearchName, tagFilterRequest.SortOption, tagFilterRequest.NewArticleIds);
             var mappedTags = _mapper.Map<List<GetAllResponse>>(pagedTags.Items);
 
             var pagedResponse = new PagedResult<GetAllResponse>
             {
                 Items = mappedTags,
-                Page = pagedRequest.Page,
-                PageSize = pagedRequest.PageSize,
+                Page = tagFilterRequest.Page,
+                PageSize = tagFilterRequest.PageSize,
                 TotalItems = pagedTags.TotalItems,
-                TotalPages = (int)Math.Ceiling(pagedTags.TotalItems / (double)pagedRequest.PageSize)
+                TotalPages = (int)Math.Ceiling(pagedTags.TotalItems / (double)tagFilterRequest.PageSize)
             };
 
 
@@ -54,5 +61,48 @@ namespace PRN232.NMS.API.Controllers
             return Ok(response);
         }
 
+        [HttpPost]
+        public async Task<IActionResult> CreateTagAsync([FromBody] CreateTagRequest createTagRequest)
+        {
+            var mappedRequest = _mapper.Map<Tag>(createTagRequest);
+
+            await _tagService.CreateTagAsync(mappedRequest);
+
+            // Implementation for creating a tag would go here
+            return StatusCode(201, new ResponseDTO<object>("Tag created successfully", true, null, null));
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteTagAsync([FromRoute] int id)
+        {
+            try
+            {
+                await _tagService.DeleteTagAsync(id);
+                return Ok(new ResponseDTO<object>("Tag deleted successfully", true, null, null));
+            }
+            catch (KeyNotFoundException)
+            {
+                return NotFound(new ResponseDTO<object>("Tag not found", false, null, null));
+            }
+        }
+
+        [HttpPut("{id}")]
+        public async Task<IActionResult> Update(int id, [FromBody] UpdateTagRequest request)
+        {
+            
+
+            try
+            {
+                var entity = _mapper.Map<Tag>(request);
+
+                await _tagService.UpdateTagAsync(id, entity);
+                return Ok(new ResponseDTO<object>("Tag updated successfully", true, null, null));
+            }
+            catch (KeyNotFoundException)
+            {
+                return NotFound(new ResponseDTO<object>("Tag not found", false, null, null));
+            }
+            
+        }
     }
 }

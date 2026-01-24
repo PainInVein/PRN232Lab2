@@ -23,16 +23,15 @@ namespace PRN232.NMS.Services
             return null;
         }
 
-        public async Task<(List<Tag> Items, int TotalItems)> GetTagsPagedAsync(int page, int pageSize)
+        public async Task<(List<Tag> Items, int TotalItems)> GetTagsPagedAsync(int page, int pageSize, string? searchTerm, string? sortOption, List<int>? newArticleIds)
         {
             try
             {
                 var items = await _unitOfWork.TagRepository
-                    .GetAllSimpleAsync((page - 1) * pageSize, pageSize);
+                    .GetAllSimpleAsync((page - 1) * pageSize, pageSize, searchTerm, sortOption, newArticleIds);
 
-                var totalItems = await _unitOfWork.TagRepository.CountAsync();
 
-                return (items, totalItems);
+                return (items.Items, items.TotalItems);
             }
             catch (Exception ex)
             {
@@ -40,5 +39,26 @@ namespace PRN232.NMS.Services
             }
         }
 
+        public async Task CreateTagAsync(Tag tag)
+        {
+             await _unitOfWork.TagRepository.CreateAsync(tag);
+            
+        }
+
+        public async Task DeleteTagAsync(int id)
+        {
+            var tag = await _unitOfWork.TagRepository.GetByIdAsync(id);
+            if (tag == null) throw new KeyNotFoundException("Article not found");
+            _unitOfWork.TagRepository.Remove(tag);
+        }
+
+        public async Task UpdateTagAsync(int id, Tag updatedTag)
+        {
+            var existingTag = await _unitOfWork.TagRepository.GetByIdAsync(id);
+            if (existingTag == null) throw new KeyNotFoundException("Tag not found");
+            existingTag.TagName = updatedTag.TagName;
+            existingTag.Note = updatedTag.Note;
+            _unitOfWork.TagRepository.Update(existingTag);
+        }
     }
 }

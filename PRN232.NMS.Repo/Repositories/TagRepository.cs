@@ -141,9 +141,36 @@ namespace PRN232.NMS.Repo.Repositories
         }
 
         // Optional: very lightweight version without articles
-        public async Task<List<Tag>> GetAllSimpleAsync(int skip, int take)
+        public async Task<(List<Tag> Items, int TotalItems)> GetAllSimpleAsync(int skip, int take, string? searchTerm, string? sortOption, List<int>? newArticleIds)
         {
-            var items = await _context.Tags
+            var query = _context.Tags.AsQueryable();
+
+            if (newArticleIds != null && newArticleIds.Count > 0)
+            {
+                query = query.Where(t =>
+                    newArticleIds.All(id =>
+                        t.NewsArticles.Any(na => na.NewsArticleId == id)
+                    )
+                );
+            }
+
+
+            //Search
+            if (!string.IsNullOrWhiteSpace(searchTerm))
+            {
+                query = query.Where(x => x.TagName.Contains(searchTerm));
+            }
+
+            //Sort
+            query = sortOption?.ToLower() switch
+            {
+                "desc" => query.OrderByDescending(x => x.TagName),
+                "asc" => query.OrderBy(x => x.TagName),
+                _ => query.OrderBy(x => x.TagId)
+            };
+
+
+            var items = await query
                 .Select(t => new Tag
                 {
                     TagId = t.TagId,
@@ -154,7 +181,10 @@ namespace PRN232.NMS.Repo.Repositories
                 .Take(take)
                 .ToListAsync();
 
-            return items ?? new List<Tag>();
+            var totalItems = await query.CountAsync();
+
+
+            return (items ?? new List<Tag>(), totalItems);
         }
 
         public async Task<int> CountAsync()

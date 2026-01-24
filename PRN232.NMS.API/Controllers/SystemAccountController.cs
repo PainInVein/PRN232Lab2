@@ -31,7 +31,7 @@ namespace PRN232.NMS.API.Controllers
 
             if (!requestValidationResult.IsNullOrEmpty())
             {
-                return BadRequest(new ResponseDTO<LoginResponse>(message: "Failed", isSuccess: false, data: null, errors: requestValidationResult));
+                return BadRequest(new ResponseDTO<object>(message: "Failed", isSuccess: false, data: null, errors: requestValidationResult));
             }
 
             var userAccount = await _systemAccountService.GetUserAccount(loginRequest.Username, loginRequest.Password);
