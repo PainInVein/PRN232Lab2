@@ -10,6 +10,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddScoped<IModelStateCheck, ModelStateCheck>();
 builder.Services.AddScoped<ISystemAccountService, SystemAccountService>();
 builder.Services.AddScoped<ITagService, TagService>();
+builder.Services.AddScoped<INewsArticleService, NewsArticleService>();
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

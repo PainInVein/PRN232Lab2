@@ -7,6 +7,7 @@ namespace Repositories
     {
         SystemAccountRepository SystemUserAccountRepository { get; }
         TagRepository TagRepository { get; }
+        NewsArticleRepository NewsArticleRepository { get; }
 
         int SaveChangeWithTransaction();
         Task<int> SaveChangeWithTransactionAsync();
@@ -17,6 +18,7 @@ namespace Repositories
         private readonly Prn312classDbContext _context;
         private SystemAccountRepository _systemAccountRepository;
         private TagRepository _tagRepository;
+        private NewsArticleRepository _newsArticleRepository;
         public UnitOfWork() => _context ??= new Prn312classDbContext();
 
         public SystemAccountRepository SystemUserAccountRepository
@@ -35,12 +37,14 @@ namespace Repositories
             }
         }
 
-
+        public NewsArticleRepository NewsArticleRepository
+        {
+            get { return _newsArticleRepository ??= new NewsArticleRepository(_context); }
+        }
 
         public int SaveChangeWithTransaction()
         {
-            int result = 0;
-
+            int result = -1;
             using (var dbContextTransaction = _context.Database.BeginTransaction())
             {
                 try
@@ -50,7 +54,7 @@ namespace Repositories
                 }
                 catch (Exception)
                 {
-                    result = 0;
+                    result = -1;
                     dbContextTransaction.Rollback();
                 }
             }
@@ -59,22 +63,20 @@ namespace Repositories
 
         public async Task<int> SaveChangeWithTransactionAsync()
         {
-            int result = 0;
-
-            using (var dbContextTransaction = _context.Database.BeginTransactionAsync())
+            int result = -1;
+            using (var dbContextTransaction = await _context.Database.BeginTransactionAsync())
             {
                 try
                 {
-                    await _context.SaveChangesAsync();
-                    dbContextTransaction.Result.CommitAsync();
+                    result = await _context.SaveChangesAsync();
+                    await dbContextTransaction.CommitAsync();
                 }
                 catch (Exception)
                 {
-                    result = 0;
-                    dbContextTransaction.Result.RollbackAsync();
+                    result = -1;
+                    await dbContextTransaction.RollbackAsync();
                 }
             }
-
             return result;
         }
     }

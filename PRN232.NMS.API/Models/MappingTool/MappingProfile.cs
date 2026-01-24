@@ -1,4 +1,6 @@
 ﻿using AutoMapper;
+using PRN232.NMS.API.Models.RequestModels.NewsArticleRequests;
+using PRN232.NMS.API.Models.ResponseModels.NewsArticleResponse;
 using PRN232.NMS.API.Models.ResponseModels.SystemAccountResponses;
 using PRN232.NMS.API.Models.ResponseModels.TagResponses;
 using PRN232.NMS.Repo.EntityModels;
@@ -19,6 +21,13 @@ namespace PRN232.NMS.API.Models.MappingTool
             CreateMap<NewsArticle, RelatedNewsArticleResponse>();
 
             CreateMap<Tag, GetAllResponse>();
+
+            CreateMap<CreateNewsArticleRequest, NewsArticle>();
+            CreateMap<UpdateNewsArticleRequest, NewsArticle>();
+            CreateMap<NewsArticle, NewsArticleResponse>()
+                .ForMember(dest => dest.CategoryName, opt => opt.MapFrom(src => src.Category.CategoryName))
+                .ForMember(dest => dest.CreatedByName, opt => opt.MapFrom(src => src.CreatedBy.AccountName))
+                .ForMember(dest => dest.Tags, opt => opt.MapFrom(src => src.Tags.Select(t => t.TagName).ToList()));
         }
     }
 }
