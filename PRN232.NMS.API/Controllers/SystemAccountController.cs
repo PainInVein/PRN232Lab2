@@ -9,34 +9,24 @@ using PRN232.NMS.Services.Interfaces;
 
 namespace PRN232.NMS.API.Controllers
 {
+    [ApiController]
     public class SystemAccountController : ControllerBase
     {
         private readonly ISystemAccountService _systemAccountService;
         private readonly IMapper _mapper;
-        private readonly IModelStateCheck _modelStateCheck;
 
-        public SystemAccountController(ISystemAccountService systemAccountService, IMapper mapper, IModelStateCheck modelStateCheck)
+        public SystemAccountController(ISystemAccountService systemAccountService, IMapper mapper)
         {
             _systemAccountService = systemAccountService;
             _mapper = mapper;
-            _modelStateCheck = modelStateCheck;
         }
 
         [HttpPost("api/authentication")]
         public async Task<IActionResult> Login([FromBody] LoginRequest loginRequest)
         {
-            LoginResponse mappedUser = new LoginResponse();
-
-            var requestValidationResult = _modelStateCheck.CheckModelState<LoginRequest>(ModelState);
-
-            if (!requestValidationResult.IsNullOrEmpty())
-            {
-                return BadRequest(new ResponseDTO<object>(message: "Failed", isSuccess: false, data: null, errors: requestValidationResult));
-            }
-
             var userAccount = await _systemAccountService.GetUserAccount(loginRequest.Username, loginRequest.Password);
 
-            mappedUser = _mapper.Map<LoginResponse>(userAccount);
+             var mappedUser = _mapper.Map<LoginResponse>(userAccount);
 
 
             if (mappedUser != null)

@@ -18,13 +18,11 @@ namespace PRN232.NMS.API.Controllers
     {
         private readonly ITagService _tagService;
         private readonly IMapper _mapper;
-        private readonly IModelStateCheck _modelStateCheck;
 
-        public TagController(ITagService tagService, IMapper mapper, IModelStateCheck modelStateCheck)
+        public TagController(ITagService tagService, IMapper mapper)
         {
             _tagService = tagService;
             _mapper = mapper;
-            _modelStateCheck = modelStateCheck;
         }
 
         [HttpGet("{id}")]
