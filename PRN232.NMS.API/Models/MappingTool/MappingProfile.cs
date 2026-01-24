@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using PRN232.NMS.API.Models.RequestModels.NewsArticleRequests;
+using PRN232.NMS.API.Models.RequestModels.TagRequests;
 using PRN232.NMS.API.Models.ResponseModels.NewsArticleResponse;
 using PRN232.NMS.API.Models.ResponseModels.SystemAccountResponses;
 using PRN232.NMS.API.Models.ResponseModels.TagResponses;
@@ -28,6 +29,10 @@ namespace PRN232.NMS.API.Models.MappingTool
                 .ForMember(dest => dest.CategoryName, opt => opt.MapFrom(src => src.Category.CategoryName))
                 .ForMember(dest => dest.CreatedByName, opt => opt.MapFrom(src => src.CreatedBy.AccountName))
                 .ForMember(dest => dest.Tags, opt => opt.MapFrom(src => src.Tags.Select(t => t.TagName).ToList()));
+
+            CreateMap<CreateTagRequest, Tag>();
+
+            CreateMap<UpdateTagRequest, Tag>();
         }
     }
 }
