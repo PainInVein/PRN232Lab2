@@ -48,22 +48,29 @@ namespace PRN232.NMS.API.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAllTags([FromQuery] TagFilterRequest tagFilterRequest)
         {
-            var pagedTags = await _tagService.GetTagsPagedAsync(tagFilterRequest.Page, tagFilterRequest.PageSize, tagFilterRequest.SearchName, tagFilterRequest.SortOption, tagFilterRequest.NewArticleIds);
-            var mappedTags = _mapper.Map<List<GetAllResponse>>(pagedTags.Items);
-
-            var pagedResponse = new PagedResult<GetAllResponse>
+            try
             {
-                Items = mappedTags,
-                Page = tagFilterRequest.Page,
-                PageSize = tagFilterRequest.PageSize,
-                TotalItems = pagedTags.TotalItems,
-                TotalPages = (int)Math.Ceiling(pagedTags.TotalItems / (double)tagFilterRequest.PageSize)
-            };
+                var pagedTags = await _tagService.GetTagsPagedAsync(tagFilterRequest.Page, tagFilterRequest.PageSize, tagFilterRequest.SearchName, tagFilterRequest.SortOption, tagFilterRequest.NewArticleIds);
+                var mappedTags = _mapper.Map<List<GetAllResponse>>(pagedTags.Items);
+
+                var pagedResponse = new PagedResult<GetAllResponse>
+                {
+                    Items = mappedTags,
+                    Page = tagFilterRequest.Page,
+                    PageSize = tagFilterRequest.PageSize,
+                    TotalItems = pagedTags.TotalItems,
+                    TotalPages = (int)Math.Ceiling(pagedTags.TotalItems / (double)tagFilterRequest.PageSize)
+                };
 
 
-            var response = new ResponseDTO<PagedResult<GetAllResponse>>(message: "Tags retrieved successfully", isSuccess: true, data: pagedResponse, errors: null);
+                var response = new ResponseDTO<PagedResult<GetAllResponse>>(message: "Tags retrieved successfully", isSuccess: true, data: pagedResponse, errors: null);
 
-            return Ok(response);
+                return Ok(response);
+            }
+            catch (Exception e)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, new ResponseDTO<object>($"Tag creation failed: {e.Message}", false, null, null));
+            }
         }
 
         [HttpPost]
