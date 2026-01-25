@@ -1,4 +1,4 @@
-﻿using PRN232.NMS.Repo.DBContext;
+using PRN232.NMS.Repo.DBContext;
 using PRN232.NMS.Repo.Repositories;
 
 namespace Repositories
@@ -8,6 +8,7 @@ namespace Repositories
         SystemAccountRepository SystemUserAccountRepository { get; }
         TagRepository TagRepository { get; }
         NewsArticleRepository NewsArticleRepository { get; }
+        CategoryRepository CategoryRepository { get; }
 
         int SaveChangeWithTransaction();
         Task<int> SaveChangeWithTransactionAsync();
@@ -19,6 +20,7 @@ namespace Repositories
         private SystemAccountRepository _systemAccountRepository;
         private TagRepository _tagRepository;
         private NewsArticleRepository _newsArticleRepository;
+        private CategoryRepository _categoryRepository;
         public UnitOfWork() => _context ??= new Prn312classDbContext();
 
         public SystemAccountRepository SystemUserAccountRepository
@@ -40,6 +42,11 @@ namespace Repositories
         public NewsArticleRepository NewsArticleRepository
         {
             get { return _newsArticleRepository ??= new NewsArticleRepository(_context); }
+        }
+
+        public CategoryRepository CategoryRepository
+        {
+            get { return _categoryRepository ??= new CategoryRepository(_context); }
         }
 
         public int SaveChangeWithTransaction()
