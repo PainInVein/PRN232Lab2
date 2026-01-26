@@ -1,4 +1,5 @@
-﻿using AutoMapper;
+using AutoMapper;
+using PRN232.NMS.API.Models.RequestModels.CategoryRequests;
 using PRN232.NMS.API.Models.RequestModels.NewsArticleRequests;
 using PRN232.NMS.API.Models.RequestModels.SystemAccountRequests;
 using PRN232.NMS.API.Models.RequestModels.TagRequests;
@@ -38,6 +39,14 @@ namespace PRN232.NMS.API.Models.MappingTool
             CreateMap<CreateTagRequest, Tag>();
 
             CreateMap<UpdateTagRequest, Tag>();
+
+            CreateMap<CreateCategoryRequest, Category>();
+            CreateMap<UpdateCategoryRequest, Category>();
+            CreateMap<Category, PRN232.NMS.API.Models.ResponseModels.CategoryResponses.GetByIdResponse>()
+                .ForMember(dest => dest.ParentCategoryName, opt => opt.MapFrom(src => src.ParentCategory != null ? src.ParentCategory.CategoryName : null))
+                .ForMember(dest => dest.ChildCategories, opt => opt.MapFrom(src => src.InverseParentCategory));
+            CreateMap<Category, PRN232.NMS.API.Models.ResponseModels.CategoryResponses.GetAllResponse>();
+            CreateMap<Category, PRN232.NMS.API.Models.ResponseModels.CategoryResponses.CategoryMinimalResponse>();
         }
     }
 }

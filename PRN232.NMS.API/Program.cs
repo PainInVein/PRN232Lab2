@@ -1,11 +1,10 @@
+using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using PRN232.NMS.API.Models.MappingTool;
 using PRN232.NMS.API.Models.RequestModels;
-using PRN232.NMS.Repo.DBContext;
+using PRN232.NMS.API.Models.ResponseModels;
 using PRN232.NMS.Services;
 using PRN232.NMS.Services.Interfaces;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -13,6 +12,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddScoped<ISystemAccountService, SystemAccountService>();
 builder.Services.AddScoped<ITagService, TagService>();
 builder.Services.AddScoped<INewsArticleService, NewsArticleService>();
+builder.Services.AddScoped<ICategoryService, CategoryService>();
 
 builder.Services.AddControllers();
 
@@ -59,6 +59,23 @@ if (app.Environment.IsDevelopment())
 }
 
 //app.UseHttpsRedirection();
+
+app.UseExceptionHandler(appError =>
+{
+    appError.Run(async context =>
+    {
+        context.Response.StatusCode = StatusCodes.Status500InternalServerError;
+        context.Response.ContentType = "application/json";
+        var feature = context.Features.Get<IExceptionHandlerFeature>();
+        var ex = feature?.Error;
+        var response = new ResponseDTO<object>(
+            "An error occurred while processing your request.",
+            false,
+            null,
+            null);
+        await context.Response.WriteAsJsonAsync(response);
+    });
+});
 
 app.UseAuthorization();
 
