@@ -13,6 +13,8 @@ builder.Services.AddScoped<ITagService, TagService>();
 builder.Services.AddScoped<INewsArticleService, NewsArticleService>();
 
 builder.Services.AddControllers();
+
+//Customizing Model Validation Error Response
 builder.Services.Configure<ApiBehaviorOptions>(options =>
 {
     options.InvalidModelStateResponseFactory = context =>
