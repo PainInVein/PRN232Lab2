@@ -1,3 +1,15 @@
+use master
+go
+
+drop database Prn312class
+go
+
+create database Prn312class
+go
+
+use Prn312class
+go
+
 -- 1. SystemAccount (base table for users who manage news)
 CREATE TABLE SystemAccount (
     AccountID       INT IDENTITY(1,1) PRIMARY KEY,
