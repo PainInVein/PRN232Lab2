@@ -12,14 +12,41 @@ namespace PRN232.NMS.Repo.Repositories
         public CategoryRepository(Prn312classDbContext context) : base(context) { }
 
         /// <summary>
-        /// Lấy category theo id, có include ParentCategory và danh sách con (InverseParentCategory).
-        /// Tương tự TagRepository.GetByTagIdAsync, NewsArticleRepository.GetByIdDetailedAsync.
+        /// GET đưa FE: Select projection, giới hạn độ sâu. Không Include (tránh circular, lấy hết).
+        /// Kiểm soát độ sâu dữ liệu - Tránh Circular Reference (Yêu cầu 4).
         /// </summary>
         public async Task<Category?> GetByCategoryIdAsync(int id)
         {
             return await _context.Categories
+                .Where(c => c.CategoryId == id)
+                .Select(c => new Category
+                {
+                    CategoryId = c.CategoryId,
+                    CategoryName = c.CategoryName,
+                    CategoryDescription = c.CategoryDescription,
+                    ParentCategoryId = c.ParentCategoryId,
+                    IsActive = c.IsActive,
+                    ParentCategory = c.ParentCategory == null ? null : new Category
+                    {
+                        CategoryId = c.ParentCategory.CategoryId,
+                        CategoryName = c.ParentCategory.CategoryName
+                    },
+                    InverseParentCategory = c.InverseParentCategory
+                        .Select(ch => new Category { CategoryId = ch.CategoryId, CategoryName = ch.CategoryName })
+                        .ToList()
+                })
+                .FirstOrDefaultAsync();
+        }
+
+        /// <summary>
+        /// Lấy entity đầy đủ (Include) chỉ khi cần update/delete. Không dùng cho GET đưa FE.
+        /// </summary>
+        public async Task<Category?> GetByIdForUpdateAsync(int id)
+        {
+            return await _context.Categories
                 .Include(c => c.ParentCategory)
                 .Include(c => c.InverseParentCategory)
+                .Include(c => c.NewsArticles)
                 .FirstOrDefaultAsync(c => c.CategoryId == id);
         }
 

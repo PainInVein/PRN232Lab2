@@ -60,24 +60,24 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-////app.UseHttpsRedirection();
+//app.UseHttpsRedirection();
 
-//app.UseExceptionHandler(appError =>
-//{
-//    appError.Run(async context =>
-//    {
-//        context.Response.StatusCode = StatusCodes.Status500InternalServerError;
-//        context.Response.ContentType = "application/json";
-//        var feature = context.Features.Get<IExceptionHandlerFeature>();
-//        var ex = feature?.Error;
-//        var response = new ResponseDTO<object>(
-//            "An error occurred while processing your request.",
-//            false,
-//            null,
-//            null);
-//        await context.Response.WriteAsJsonAsync(response);
-//    });
-//});
+app.UseExceptionHandler(appError =>
+{
+    appError.Run(async context =>
+    {
+        context.Response.StatusCode = StatusCodes.Status500InternalServerError;
+        context.Response.ContentType = "application/json";
+        var feature = context.Features.Get<IExceptionHandlerFeature>();
+        var ex = feature?.Error;
+        var response = new ResponseDTO<object>(
+            "An error occurred while processing your request.",
+            false,
+            null,
+            null);
+        await context.Response.WriteAsJsonAsync(response);
+    });
+});
 
 app.UseAuthorization();
 

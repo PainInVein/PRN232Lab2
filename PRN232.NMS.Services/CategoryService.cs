@@ -45,7 +45,7 @@ namespace PRN232.NMS.Services
 
         public async Task<string> DeleteAsync(int id)
         {
-            var category = await _unitOfWork.CategoryRepository.GetByCategoryIdAsync(id);
+            var category = await _unitOfWork.CategoryRepository.GetByIdForUpdateAsync(id);
             if (category == null) return "Category not found";
 
             // Không cho delete nếu có NewsArticles (FK constraint)
@@ -62,7 +62,7 @@ namespace PRN232.NMS.Services
 
         public async Task<string> UpdateAsync(int id, Category updatedCategory)
         {
-            var existing = await _unitOfWork.CategoryRepository.GetByCategoryIdAsync(id);
+            var existing = await _unitOfWork.CategoryRepository.GetByIdForUpdateAsync(id);
             if (existing == null) return "Category not found";
 
             // Validate: ParentCategoryId không được = chính nó (circular)
