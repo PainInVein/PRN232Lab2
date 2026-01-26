@@ -1,10 +1,10 @@
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
-using PRN232.NMS.API.Models.RequestModels.CategoryRequests;
-using PRN232.NMS.API.Models.ResponseModels;
-using PRN232.NMS.API.Models.ResponseModels.CategoryResponses;
 using PRN232.NMS.Repo.EntityModels;
 using PRN232.NMS.Services.Interfaces;
+using PRN232.NMS.Services.Models.RequestModels.CategoryRequests;
+using PRN232.NMS.Services.Models.ResponseModels;
+using PRN232.NMS.Services.Models.ResponseModels.CategoryResponses;
 
 namespace PRN232.NMS.API.Controllers
 {

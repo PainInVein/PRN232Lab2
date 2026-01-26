@@ -1,19 +1,18 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using PRN232.NMS.API.Models.RequestModels;
-using PRN232.NMS.API.Models.RequestModels.NewsArticleRequests;
-using PRN232.NMS.API.Models.RequestModels.TagRequests;
-using PRN232.NMS.API.Models.ResponseModels;
-using PRN232.NMS.API.Models.ResponseModels.TagResponses;
 using PRN232.NMS.Repo.EntityModels;
 using PRN232.NMS.Services.Interfaces;
+using PRN232.NMS.Services.Models.RequestModels.TagRequests;
+using PRN232.NMS.Services.Models.ResponseModels;
+using PRN232.NMS.Services.Models.ResponseModels.TagResponses;
 using System.Security.Claims;
 
 namespace PRN232.NMS.API.Controllers
 {
     [Route("api/tags")]
     [ApiController]
+    [Authorize]
     public class TagController : ControllerBase
     {
         private readonly ITagService _tagService;
@@ -33,11 +32,11 @@ namespace PRN232.NMS.API.Controllers
                 var tag = await _tagService.GetByIdAsync(id);
                 if (tag != null)
                 {
-                    var mappedTag = _mapper.Map<GetByIdResponse>(tag);
-                    var response = new ResponseDTO<GetByIdResponse>(message: "Tag retrieved successfully", isSuccess: true, data: mappedTag, errors: null);
+                    var mappedTag = _mapper.Map<GetTagByIdResponse>(tag);
+                    var response = new ResponseDTO<GetTagByIdResponse>(message: "Tag retrieved successfully", isSuccess: true, data: mappedTag, errors: null);
                     return Ok(response);
                 }
-                return NotFound(new ResponseDTO<GetByIdResponse>(message: "Tag not found", isSuccess: false, data: null, errors: null));
+                return NotFound(new ResponseDTO<GetTagByIdResponse>(message: "Tag not found", isSuccess: false, data: null, errors: null));
             }catch(Exception e)
             {
                 return StatusCode(StatusCodes.Status500InternalServerError, new ResponseDTO<object>($"Tag retrieval failed: {e.Message}", false, null, null));
@@ -51,9 +50,9 @@ namespace PRN232.NMS.API.Controllers
             try
             {
                 var pagedTags = await _tagService.GetTagsPagedAsync(tagFilterRequest.Page, tagFilterRequest.PageSize, tagFilterRequest.SearchName, tagFilterRequest.SortOption, tagFilterRequest.NewArticleIds);
-                var mappedTags = _mapper.Map<List<GetAllResponse>>(pagedTags.Items);
+                var mappedTags = _mapper.Map<List<GetAllTagResponse>>(pagedTags.Items);
 
-                var pagedResponse = new PagedResult<GetAllResponse>
+                var pagedResponse = new PagedResult<GetAllTagResponse>
                 {
                     Items = mappedTags,
                     Page = tagFilterRequest.Page,
@@ -63,7 +62,7 @@ namespace PRN232.NMS.API.Controllers
                 };
 
 
-                var response = new ResponseDTO<PagedResult<GetAllResponse>>(message: "Tags retrieved successfully", isSuccess: true, data: pagedResponse, errors: null);
+                var response = new ResponseDTO<PagedResult<GetAllTagResponse>>(message: "Tags retrieved successfully", isSuccess: true, data: pagedResponse, errors: null);
 
                 return Ok(response);
             }
