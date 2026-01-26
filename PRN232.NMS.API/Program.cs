@@ -15,6 +15,8 @@ builder.Services.AddScoped<INewsArticleService, NewsArticleService>();
 builder.Services.AddScoped<ICategoryService, CategoryService>();
 
 builder.Services.AddControllers();
+
+//Customizing Model Validation Error Response
 builder.Services.Configure<ApiBehaviorOptions>(options =>
 {
     options.InvalidModelStateResponseFactory = context =>
