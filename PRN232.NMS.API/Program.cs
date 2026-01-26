@@ -1,14 +1,17 @@
-using PRN232.NMS.Services.Interfaces;
-using PRN232.NMS.Services;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using PRN232.NMS.API.Models.MappingTool;
 using PRN232.NMS.API.Models.RequestModels;
-using Microsoft.AspNetCore.Mvc;
+using PRN232.NMS.Repo.DBContext;
+using PRN232.NMS.Services;
+using PRN232.NMS.Services.Interfaces;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddScoped<ISystemAccountService, SystemAccountService>();
+builder.Services.AddScoped<Repositories.IUnitOfWork, Repositories.UnitOfWork>();
 builder.Services.AddScoped<ITagService, TagService>();
 builder.Services.AddScoped<INewsArticleService, NewsArticleService>();
 
@@ -36,9 +39,6 @@ builder.Services.Configure<ApiBehaviorOptions>(options =>
     };
 });
 
-
-
-
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -48,6 +48,7 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddAutoMapper(typeof(MappingProfile).Assembly);
 
 var app = builder.Build();
+app.UseMiddleware<PRN232.NMS.API.Middlewares.ExceptionMiddleware>();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
