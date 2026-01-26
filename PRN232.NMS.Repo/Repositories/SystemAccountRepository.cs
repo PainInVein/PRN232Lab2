@@ -35,7 +35,6 @@ namespace PRN232.NMS.Repo.Repositories
                     AccountEmail = ua.AccountEmail,
                     AccountRole = ua.AccountRole,
 
-                    // Kiểm soát độ sâu dữ liệu - Tránh Circular Reference (Yêu cầu 4)
                     NewsArticleCreatedBies = ua.NewsArticleCreatedBies.Select(a => new NewsArticle
                     {
                         NewsArticleId = a.NewsArticleId,
@@ -55,7 +54,6 @@ namespace PRN232.NMS.Repo.Repositories
                 .FirstOrDefaultAsync();
         }
 
-        // 3. Lấy danh sách có Paging, Search, Sort (Tuân thủ yêu cầu 5)
         public async Task<(List<SystemAccount> Items, int TotalItems)> GetAllPagedAsync(
             int skip,
             int take,
@@ -65,13 +63,11 @@ namespace PRN232.NMS.Repo.Repositories
         {
             var query = _context.SystemAccounts.AsQueryable();
 
-            // Search (Yêu cầu 5)
             if (!string.IsNullOrWhiteSpace(searchTerm))
             {
                 query = query.Where(x => x.AccountName.Contains(searchTerm) || x.AccountEmail.Contains(searchTerm));
             }
 
-            // Sort (Yêu cầu 5)
             query = sortBy?.ToLower() switch
             {
                 "name" => isDescending ? query.OrderByDescending(x => x.AccountName) : query.OrderBy(x => x.AccountName),
@@ -89,7 +85,6 @@ namespace PRN232.NMS.Repo.Repositories
                     AccountName = ua.AccountName,
                     AccountEmail = ua.AccountEmail,
                     AccountRole = ua.AccountRole
-                    // Bản List thường không kèm theo Collection NewsArticle để nhẹ query (Field Selection)
                 })
                 .Skip(skip)
                 .Take(take)
@@ -98,7 +93,6 @@ namespace PRN232.NMS.Repo.Repositories
             return (items ?? new List<SystemAccount>(), totalItems);
         }
 
-        // 4. Đếm số lượng
         public async Task<int> CountAsync()
         {
             return await _context.SystemAccounts.CountAsync();
