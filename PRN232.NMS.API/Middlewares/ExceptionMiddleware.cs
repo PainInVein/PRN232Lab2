@@ -31,13 +31,41 @@ namespace PRN232.NMS.API.Middlewares
         private static Task HandleExceptionAsync(HttpContext context, Exception exception)
         {
             context.Response.ContentType = "application/json";
-            context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
+
+            var (statusCode, message, errorMessage) = exception switch
+            {
+                KeyNotFoundException => (
+                    StatusCodes.Status404NotFound,
+                    exception.Message,
+                    "Resource not found"
+                ),
+
+                ArgumentNullException => (
+                    StatusCodes.Status400BadRequest,
+                    exception.Message,
+                    "Required field is missing"
+                ),
+
+                ArgumentException => (
+                    StatusCodes.Status400BadRequest,
+                    exception.Message,
+                    "Invalid argument provided"
+                ),
+
+                _ => (
+                    StatusCodes.Status500InternalServerError,
+                    "An unexpected error occurred",
+                    exception.Message
+                )
+            };
+
+            context.Response.StatusCode = statusCode;
 
             var response = new ResponseDTO<object>(
-                message: "Internal Server Error.",
+                message: message,
                 isSuccess: false,
                 data: null,
-                errors: exception.Message
+                errors: errorMessage
             );
 
             var options = new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase };

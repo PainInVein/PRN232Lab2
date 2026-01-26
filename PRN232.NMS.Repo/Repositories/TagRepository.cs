@@ -193,5 +193,21 @@ namespace PRN232.NMS.Repo.Repositories
 
             return result;
         }
+
+        public async Task<List<Tag>> GetByIdsAsync(List<int> tagIds)
+        {
+            if (tagIds == null || !tagIds.Any())
+                return new List<Tag>();
+
+            return await _context.Tags
+                .Where(t => tagIds.Contains(t.TagId))
+                .Select(t => new Tag
+                {
+                    TagId = t.TagId,
+                    TagName = t.TagName,
+                    Note = t.Note
+                })
+                .ToListAsync();
+        }
     }
 }
