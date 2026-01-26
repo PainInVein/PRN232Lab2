@@ -10,18 +10,10 @@ namespace PRN232.NMS.Repo.Repositories
         public SystemAccountRepository() { }
         public SystemAccountRepository(Prn312classDbContext context) : base(context) { }
 
-        public async Task<SystemAccount> GetUsernameAsync(string username, string password)
+        public async Task<SystemAccount?> GetByUsernameAsync(string username)
         {
             return await _context.SystemAccounts
-                .Where(ua => ua.AccountName == username && ua.AccountPassword == password)
-                .Select(ua => new SystemAccount
-                {
-                    AccountId = ua.AccountId,
-                    AccountName = ua.AccountName,
-                    AccountEmail = ua.AccountEmail,
-                    AccountRole = ua.AccountRole
-                })
-                .FirstOrDefaultAsync();
+                .FirstOrDefaultAsync(ua => ua.AccountName == username);
         }
 
         public async Task<SystemAccount?> GetByIdWithDetailsAsync(int id)

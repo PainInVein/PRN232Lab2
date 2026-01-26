@@ -1,6 +1,7 @@
 ﻿using PRN232.NMS.Repo.EntityModels;
 using PRN232.NMS.Services.Interfaces;
 using Repositories;
+using BC = BCrypt.Net.BCrypt;
 
 namespace PRN232.NMS.Services
 {
@@ -12,7 +13,15 @@ namespace PRN232.NMS.Services
 
         public async Task<SystemAccount?> GetUserAccount(string username, string password)
         {
-            return await _unitOfWork.SystemUserAccountRepository.GetUsernameAsync(username, password);
+            var user = await _unitOfWork.SystemUserAccountRepository.GetByUsernameAsync(username);
+
+            if (user != null && BC.Verify(password, user.AccountPassword))
+            {
+                return user;
+            }
+
+            return null;
+
         }
         public async Task<SystemAccount?> GetByIdAsync(int id)
         {
@@ -29,6 +38,10 @@ namespace PRN232.NMS.Services
 
         public async Task CreateUserAsync(SystemAccount account)
         {
+            if (!string.IsNullOrEmpty(account.AccountPassword))
+            {
+                account.AccountPassword = BC.HashPassword(account.AccountPassword);
+            }
             await _unitOfWork.SystemUserAccountRepository.CreateAsync(account);
             await _unitOfWork.SaveChangeWithTransactionAsync();
         }
@@ -43,7 +56,7 @@ namespace PRN232.NMS.Services
             existingUser.AccountRole = updatedAccount.AccountRole;
             if (!string.IsNullOrEmpty(updatedAccount.AccountPassword))
             {
-                existingUser.AccountPassword = updatedAccount.AccountPassword;
+                existingUser.AccountPassword = BC.HashPassword(updatedAccount.AccountPassword);
             }
 
             _unitOfWork.SystemUserAccountRepository.Update(existingUser);
