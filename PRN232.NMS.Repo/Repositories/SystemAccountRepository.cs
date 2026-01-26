@@ -12,13 +12,96 @@ namespace PRN232.NMS.Repo.Repositories
 
         public async Task<SystemAccount> GetUsernameAsync(string username, string password)
         {
-            return await _context.SystemAccounts.FirstOrDefaultAsync(ua => ua.AccountName == username
-                                                                && ua.AccountPassword == password);
+            return await _context.SystemAccounts
+                .Where(ua => ua.AccountName == username && ua.AccountPassword == password)
+                .Select(ua => new SystemAccount
+                {
+                    AccountId = ua.AccountId,
+                    AccountName = ua.AccountName,
+                    AccountEmail = ua.AccountEmail,
+                    AccountRole = ua.AccountRole
+                })
+                .FirstOrDefaultAsync();
         }
 
-        public async Task<SystemAccount> GetAllUserAsync()
+        public async Task<SystemAccount?> GetByIdWithDetailsAsync(int id)
         {
-            return await _context.SystemAccounts.FirstOrDefaultAsync();
+            return await _context.SystemAccounts
+                .Where(ua => ua.AccountId == id)
+                .Select(ua => new SystemAccount
+                {
+                    AccountId = ua.AccountId,
+                    AccountName = ua.AccountName,
+                    AccountEmail = ua.AccountEmail,
+                    AccountRole = ua.AccountRole,
+
+                    // Kiểm soát độ sâu dữ liệu - Tránh Circular Reference (Yêu cầu 4)
+                    NewsArticleCreatedBies = ua.NewsArticleCreatedBies.Select(a => new NewsArticle
+                    {
+                        NewsArticleId = a.NewsArticleId,
+                        NewsTitle = a.NewsTitle,
+                        Headline = a.Headline,
+                        CreatedDate = a.CreatedDate
+                    }).ToList(),
+
+                    NewsArticleUpdatedBies = ua.NewsArticleUpdatedBies.Select(a => new NewsArticle
+                    {
+                        NewsArticleId = a.NewsArticleId,
+                        NewsTitle = a.NewsTitle,
+                        Headline = a.Headline,
+                        CreatedDate = a.CreatedDate
+                    }).ToList()
+                })
+                .FirstOrDefaultAsync();
+        }
+
+        // 3. Lấy danh sách có Paging, Search, Sort (Tuân thủ yêu cầu 5)
+        public async Task<(List<SystemAccount> Items, int TotalItems)> GetAllPagedAsync(
+            int skip,
+            int take,
+            string? searchTerm,
+            string? sortBy,
+            bool isDescending)
+        {
+            var query = _context.SystemAccounts.AsQueryable();
+
+            // Search (Yêu cầu 5)
+            if (!string.IsNullOrWhiteSpace(searchTerm))
+            {
+                query = query.Where(x => x.AccountName.Contains(searchTerm) || x.AccountEmail.Contains(searchTerm));
+            }
+
+            // Sort (Yêu cầu 5)
+            query = sortBy?.ToLower() switch
+            {
+                "name" => isDescending ? query.OrderByDescending(x => x.AccountName) : query.OrderBy(x => x.AccountName),
+                "email" => isDescending ? query.OrderByDescending(x => x.AccountEmail) : query.OrderBy(x => x.AccountEmail),
+                "role" => isDescending ? query.OrderByDescending(x => x.AccountRole) : query.OrderBy(x => x.AccountRole),
+                _ => isDescending ? query.OrderByDescending(x => x.AccountId) : query.OrderBy(x => x.AccountId)
+            };
+
+            var totalItems = await query.CountAsync();
+
+            var items = await query
+                .Select(ua => new SystemAccount
+                {
+                    AccountId = ua.AccountId,
+                    AccountName = ua.AccountName,
+                    AccountEmail = ua.AccountEmail,
+                    AccountRole = ua.AccountRole
+                    // Bản List thường không kèm theo Collection NewsArticle để nhẹ query (Field Selection)
+                })
+                .Skip(skip)
+                .Take(take)
+                .ToListAsync();
+
+            return (items ?? new List<SystemAccount>(), totalItems);
+        }
+
+        // 4. Đếm số lượng
+        public async Task<int> CountAsync()
+        {
+            return await _context.SystemAccounts.CountAsync();
         }
     }
 }
