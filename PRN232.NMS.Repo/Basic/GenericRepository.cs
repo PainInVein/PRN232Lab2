@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using PRN232.NMS.Repo.DBContext;
 
-namespace EVCMS.Repositories.BinhLS.Basic
+namespace PRN232.NMS.Repo.Basic
 {
     public class GenericRepository<T> where T : class
     {

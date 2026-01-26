@@ -1,7 +1,7 @@
-﻿using PRN232.NMS.Repo.EntityModels;
+﻿using PRN232.NMS.Repo;
+using PRN232.NMS.Repo.EntityModels;
 using PRN232.NMS.Repo.Repositories;
 using PRN232.NMS.Services.Interfaces;
-using Repositories;
 
 namespace PRN232.NMS.Services
 {

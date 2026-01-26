@@ -1,5 +1,5 @@
-﻿using EVCMS.Repositories.BinhLS.Basic;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
+using PRN232.NMS.Repo.Basic;
 using PRN232.NMS.Repo.DBContext;
 using PRN232.NMS.Repo.EntityModels;
 
@@ -88,6 +88,12 @@ namespace PRN232.NMS.Repo.Repositories
         public async Task<int> CountAsync()
         {
             return await _context.SystemAccounts.CountAsync();
+        }
+
+        public async Task<SystemAccount?> LoginAsync(string email, string password)
+        {
+            return await _context.SystemAccounts
+                .FirstOrDefaultAsync(ua => ua.AccountEmail == email && ua.AccountPassword == password);
         }
     }
 }

@@ -1,5 +1,5 @@
-﻿using EVCMS.Repositories.BinhLS.Basic;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
+using PRN232.NMS.Repo.Basic;
 using PRN232.NMS.Repo.DBContext;
 using PRN232.NMS.Repo.EntityModels;
 using System.Linq.Expressions;

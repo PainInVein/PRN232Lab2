@@ -1,6 +1,6 @@
-﻿using PRN232.NMS.Repo.EntityModels;
+﻿using PRN232.NMS.Repo;
+using PRN232.NMS.Repo.EntityModels;
 using PRN232.NMS.Services.Interfaces;
-using Repositories;
 using BC = BCrypt.Net.BCrypt;
 
 namespace PRN232.NMS.Services
