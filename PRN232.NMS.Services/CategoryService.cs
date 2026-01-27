@@ -90,7 +90,10 @@ namespace PRN232.NMS.Services
             existing.ParentCategoryId = updatedCategory.ParentCategoryId;
             existing.IsActive = updatedCategory.IsActive;
 
-            await _unitOfWork.CategoryRepository.UpdateAsync(existing);
+            var result = await _unitOfWork.SaveChangeWithTransactionAsync();
+            if (result <= 0)
+                return "Update failed.";
+
             return string.Empty;
         }
     }
