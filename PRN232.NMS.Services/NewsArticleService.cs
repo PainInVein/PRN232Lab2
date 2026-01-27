@@ -57,11 +57,7 @@ namespace PRN232.NMS.Services
                     var notFoundIds = tagIds.Except(tags.Select(t => t.TagId)).ToList();
                     throw new KeyNotFoundException($"Tags not found: {string.Join(", ", notFoundIds)}");
                 }
-
-                foreach (var tag in tags)
-                {
-                    article.Tags.Add(tag);
-                }
+                    article.Tags = tags;
             }
 
             await _unitOfWork.NewsArticleRepository.CreateAsync(article);
@@ -112,10 +108,8 @@ namespace PRN232.NMS.Services
                         throw new KeyNotFoundException($"Tags not found: {string.Join(", ", notFoundIds)}");
                     }
 
-                    foreach (var tag in tags)
-                    {
-                        existingArticle.Tags.Add(tag);
-                    }
+                    
+                        existingArticle.Tags = tags;
                 }
             }
 

@@ -1,9 +1,11 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using PRN232.NMS.API.Models;
+using PRN232.NMS.API.Models.RequestModels.Auth;
+using PRN232.NMS.API.Models.ResponseModels;
+using PRN232.NMS.API.Models.ResponseModels.SystemAccountResponses;
 using PRN232.NMS.Services.Interfaces;
-using PRN232.NMS.Services.Models;
-using PRN232.NMS.Services.Models.RequestModels.Auth;
-using PRN232.NMS.Services.Models.ResponseModels;
 
 namespace PRN232.NMS.API.Controllers
 {
@@ -12,10 +14,11 @@ namespace PRN232.NMS.API.Controllers
     public class AuthController : Controller
     {
         private readonly IAuthService _authService;
-
-        public AuthController(IAuthService authService)
+        private readonly IMapper _mapper;
+        public AuthController(IAuthService authService, IMapper mapper)
         {
             _authService = authService;
+            _mapper = mapper;
         }
 
         [AllowAnonymous]
@@ -34,10 +37,13 @@ namespace PRN232.NMS.API.Controllers
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] RegisterRequestModel request)
         {
-            var response = await _authService.RegisterAsync(request.Email, request.Name, request.Password);
+            var user = await _authService.RegisterAsync(request.Email, request.Name, request.Password);
+
+            var response = _mapper.Map<UserResponse>(user);
+
             if (response == null)
             {
-                return BadRequest(new ResponseDTO<string>("Registration failed", false, null, "User already exist" ));
+                return BadRequest(new ResponseDTO<string>("Registration failed", false, null, "User already exist"));
             }
             return Ok(new ResponseDTO<object>("Registration successful", true, response, null));
         }

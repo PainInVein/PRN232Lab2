@@ -1,5 +1,4 @@
-﻿using PRN232.NMS.Services.Models.ResponseModels;
-using System.Net;
+﻿using PRN232.NMS.API.Models.ResponseModels;
 using System.Text.Json;
 
 namespace PRN232.NMS.API.Middlewares

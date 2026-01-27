@@ -1,10 +1,10 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using PRN232.NMS.API.Extensions;
+using PRN232.NMS.API.Models.MappingTool;
+using PRN232.NMS.API.Models.ResponseModels;
 using PRN232.NMS.Repo;
 using PRN232.NMS.Services;
 using PRN232.NMS.Services.Interfaces;
-using PRN232.NMS.Services.Models.MappingTool;
-using PRN232.NMS.Services.Models.ResponseModels;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -34,7 +34,7 @@ builder.Services.Configure<ApiBehaviorOptions>(options =>
                 kvp => kvp.Value!.Errors.Select(e => e.ErrorMessage).ToArray()
             );
 
-        var response = new ResponseDTO<object> ()
+        var response = new ResponseDTO<object>()
         {
             Message = "Validation failed",
             IsSuccess = false,

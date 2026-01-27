@@ -1,11 +1,10 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.IdentityModel.Tokens;
+using PRN232.NMS.API.Models.RequestModels.SystemAccountRequests;
+using PRN232.NMS.API.Models.ResponseModels;
+using PRN232.NMS.API.Models.ResponseModels.SystemAccountResponses;
 using PRN232.NMS.Repo.EntityModels;
 using PRN232.NMS.Services.Interfaces;
-using PRN232.NMS.Services.Models.RequestModels.SystemAccountRequests;
-using PRN232.NMS.Services.Models.ResponseModels;
-using PRN232.NMS.Services.Models.ResponseModels.SystemAccountResponses;
 
 namespace PRN232.NMS.API.Controllers
 {
