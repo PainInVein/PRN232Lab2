@@ -2,6 +2,7 @@
 using PRN232.NMS.Repo.Basic;
 using PRN232.NMS.Repo.DBContext;
 using PRN232.NMS.Repo.EntityModels;
+using System.Threading.Tasks;
 
 namespace PRN232.NMS.Repo.Repositories
 {
@@ -94,6 +95,12 @@ namespace PRN232.NMS.Repo.Repositories
         {
             return await _context.SystemAccounts
                 .FirstOrDefaultAsync(ua => ua.AccountEmail == email && ua.AccountPassword == password);
+        }
+
+        public async Task<bool> IsEmailExist(string email)
+        {
+            return await _context.SystemAccounts
+                .AnyAsync(ua => ua.AccountEmail == email);
         }
     }
 }

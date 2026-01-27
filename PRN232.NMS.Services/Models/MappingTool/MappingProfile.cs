@@ -1,6 +1,6 @@
-
 using AutoMapper;
 using PRN232.NMS.Repo.EntityModels;
+using PRN232.NMS.Services.Models.RequestModels.Auth;
 using PRN232.NMS.Services.Models.RequestModels.CategoryRequests;
 using PRN232.NMS.Services.Models.RequestModels.NewsArticleRequests;
 using PRN232.NMS.Services.Models.RequestModels.SystemAccountRequests;
@@ -49,6 +49,9 @@ namespace PRN232.NMS.Services.Models.MappingTool
                 .ForMember(dest => dest.ChildCategories, opt => opt.MapFrom(src => src.InverseParentCategory));
             CreateMap<Category, ResponseModels.CategoryResponses.GetAllResponse>();
             CreateMap<Category, CategoryMinimalResponse>();
+
+            CreateMap<SystemAccount, LoginRequestModel>().ReverseMap();
+            CreateMap<SystemAccount, RegisterRequestModel>().ReverseMap();
         }
     }
 }

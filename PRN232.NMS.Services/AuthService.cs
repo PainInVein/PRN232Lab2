@@ -1,7 +1,9 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Http.HttpResults;
 using PRN232.NMS.Repo;
-using PRN232.NMS.Services.DataHandler.ExceptionMidleware;
+using PRN232.NMS.Repo.EntityModels;
 using PRN232.NMS.Services.Interfaces;
+using PRN232.NMS.Services.Models;
 using PRN232.NMS.Services.Models.RequestModels.Auth;
 namespace PRN232.NMS.Services
 {
@@ -23,7 +25,7 @@ namespace PRN232.NMS.Services
             var user = await _unitOfWork.SystemUserAccountRepository.LoginAsync(request.Email, request.Password);
             if (user == null)
             {
-                throw new Exception("Invalid email or pasword");
+                return null;
             }
             else
                 return _jwtService.GenerateToken(user);
@@ -34,9 +36,23 @@ namespace PRN232.NMS.Services
             throw new NotImplementedException();
         }
 
-        public Task<bool> RegisterAsync(string email, string password)
+        public async Task<object> RegisterAsync(RegisterRequestModel request)
         {
-            throw new NotImplementedException();
+            var existingEmail = await _unitOfWork.SystemUserAccountRepository.IsEmailExist(request.Email);
+            if (existingEmail)
+            {
+                throw new Exception("Email already exists");                
+            }
+            var userAccount = _mapper.Map<SystemAccount>(request);
+            userAccount.AccountRole = "Reporter";
+            userAccount.AccountEmail = request.Email;
+            userAccount.AccountPassword = request.Password;
+            userAccount.AccountName = request.Name;
+
+            await _unitOfWork.SystemUserAccountRepository.CreateAsync(userAccount);
+            await _unitOfWork.SaveChangeWithTransactionAsync();
+
+            return request;
         }
     }
 }
