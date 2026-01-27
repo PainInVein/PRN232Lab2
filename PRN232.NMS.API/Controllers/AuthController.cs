@@ -22,7 +22,7 @@ namespace PRN232.NMS.API.Controllers
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginRequestModel request)
         {
-            var response = await _authService.LoginAsync(request);
+            var response = await _authService.LoginAsync(request.Email, request.Password);
             if (response == null)
             {
                 return Unauthorized(new ResponseDTO<string>("Login Fail", false, null, "Invalid email or password"));
@@ -34,7 +34,7 @@ namespace PRN232.NMS.API.Controllers
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] RegisterRequestModel request)
         {
-            var response = await _authService.RegisterAsync(request);
+            var response = await _authService.RegisterAsync(request.Email, request.Name, request.Password);
             if (response == null)
             {
                 return BadRequest(new ResponseDTO<string>("Registration failed", false, null, "User already exist" ));
