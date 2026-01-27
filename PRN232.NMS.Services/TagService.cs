@@ -20,7 +20,6 @@ namespace PRN232.NMS.Services
             {
                 throw new Exception(ex.Message + "\n");
             }
-            return null;
         }
 
         public async Task<(List<Tag> Items, int TotalItems)> GetTagsPagedAsync(int page, int pageSize, string? searchTerm, string? sortOption, List<int>? newArticleIds)

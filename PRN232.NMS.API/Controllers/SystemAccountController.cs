@@ -1,11 +1,10 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.IdentityModel.Tokens;
+using PRN232.NMS.API.Models.RequestModels.SystemAccountRequests;
+using PRN232.NMS.API.Models.ResponseModels;
+using PRN232.NMS.API.Models.ResponseModels.SystemAccountResponses;
 using PRN232.NMS.Repo.EntityModels;
 using PRN232.NMS.Services.Interfaces;
-using PRN232.NMS.Services.Models.RequestModels.SystemAccountRequests;
-using PRN232.NMS.Services.Models.ResponseModels;
-using PRN232.NMS.Services.Models.ResponseModels.SystemAccountResponses;
 
 namespace PRN232.NMS.API.Controllers
 {
@@ -22,23 +21,23 @@ namespace PRN232.NMS.API.Controllers
             _mapper = mapper;
         }
 
-        [HttpPost("authentication")]
-        public async Task<IActionResult> Login([FromBody] LoginRequest loginRequest)
-        {
-            var userAccount = await _systemAccountService.GetUserAccount(loginRequest.Username, loginRequest.Password);
+        //[HttpPost("authentication")]
+        //public async Task<IActionResult> Login([FromBody] LoginRequest loginRequest)
+        //{
+        //    var userAccount = await _systemAccountService.GetUserAccount(loginRequest.Username, loginRequest.Password);
 
-            var mappedUser = _mapper.Map<LoginResponse>(userAccount);
+        //    var mappedUser = _mapper.Map<LoginResponse>(userAccount);
 
 
-            if (mappedUser != null)
-            {
-                var response = new ResponseDTO<LoginResponse>(message: "Login successfully", isSuccess: true, data: mappedUser, errors: null);
+        //    if (mappedUser != null)
+        //    {
+        //        var response = new ResponseDTO<LoginResponse>(message: "Login successfully", isSuccess: true, data: mappedUser, errors: null);
 
-                return Ok(response);
-            }
+        //        return Ok(response);
+        //    }
 
-            return Unauthorized(new ResponseDTO<LoginResponse>(message: "Failed", isSuccess: true, data: null, errors: null));
-        }
+        //    return Unauthorized(new ResponseDTO<LoginResponse>(message: "Failed", isSuccess: true, data: null, errors: null));
+        //}
 
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(int id)
