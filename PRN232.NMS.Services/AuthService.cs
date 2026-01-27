@@ -5,6 +5,7 @@ using PRN232.NMS.Repo.EntityModels;
 using PRN232.NMS.Services.Interfaces;
 using PRN232.NMS.Services.Models;
 using PRN232.NMS.Services.Models.RequestModels.Auth;
+using PRN232.NMS.Services.Models.ResponseModels.SystemAccountResponses;
 namespace PRN232.NMS.Services
 {
     public class AuthService : IAuthService
@@ -20,9 +21,9 @@ namespace PRN232.NMS.Services
             _jwtService = jwtService;
         }
 
-        public async Task<string> LoginAsync(LoginRequestModel request)
+        public async Task<string> LoginAsync(string email, string password)
         {
-            var user = await _unitOfWork.SystemUserAccountRepository.LoginAsync(request.Email, request.Password);
+            var user = await _unitOfWork.SystemUserAccountRepository.LoginAsync(email, password);
             if (user == null)
             {
                 return null;
@@ -36,23 +37,25 @@ namespace PRN232.NMS.Services
             throw new NotImplementedException();
         }
 
-        public async Task<object> RegisterAsync(RegisterRequestModel request)
+        public async Task<object> RegisterAsync(string email, string name, string password)
         {
-            var existingEmail = await _unitOfWork.SystemUserAccountRepository.IsEmailExist(request.Email);
+            var existingEmail = await _unitOfWork.SystemUserAccountRepository.IsEmailExist(email);
             if (existingEmail)
             {
                 throw new Exception("Email already exists");                
             }
-            var userAccount = _mapper.Map<SystemAccount>(request);
-            userAccount.AccountRole = "Reporter";
-            userAccount.AccountEmail = request.Email;
-            userAccount.AccountPassword = request.Password;
-            userAccount.AccountName = request.Name;
+            var userAccount = new SystemAccount()
+            {
+                AccountEmail = email,
+                AccountName = name,
+                AccountPassword = password,
+                AccountRole = "Reporter"
+            };
 
             await _unitOfWork.SystemUserAccountRepository.CreateAsync(userAccount);
             await _unitOfWork.SaveChangeWithTransactionAsync();
 
-            return request;
+            return _mapper.Map<UserResponse>(userAccount);
         }
     }
 }
