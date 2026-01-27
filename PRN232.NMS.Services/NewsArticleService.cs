@@ -7,7 +7,7 @@ namespace PRN232.NMS.Services
     public class NewsArticleService : INewsArticleService
     {
         private readonly IUnitOfWork _unitOfWork;
-                
+
         public NewsArticleService()
         {
             _unitOfWork ??= new UnitOfWork();
@@ -57,7 +57,7 @@ namespace PRN232.NMS.Services
                     var notFoundIds = tagIds.Except(tags.Select(t => t.TagId)).ToList();
                     throw new KeyNotFoundException($"Tags not found: {string.Join(", ", notFoundIds)}");
                 }
-                    article.Tags = tags;
+                article.Tags = tags;
             }
 
             await _unitOfWork.NewsArticleRepository.CreateAsync(article);
@@ -74,7 +74,7 @@ namespace PRN232.NMS.Services
             if (string.IsNullOrWhiteSpace(updatedArticle.NewsTitle))
                 throw new ArgumentException("Article title is required", nameof(updatedArticle.NewsTitle));
 
-            var existingArticle = await _unitOfWork.NewsArticleRepository.GetByIdDetailedAsync(id);
+            var existingArticle = await _unitOfWork.NewsArticleRepository.GetAllArticleForUpdate(id);
             if (existingArticle == null)
                 throw new KeyNotFoundException($"Article with ID {id} not found");
 
@@ -102,18 +102,20 @@ namespace PRN232.NMS.Services
                 {
                     var tags = await _unitOfWork.TagRepository.GetByIdsAsync(tagIds);
 
-                    if (tags.Count != tagIds.Count)
-                    {
-                        var notFoundIds = tagIds.Except(tags.Select(t => t.TagId)).ToList();
-                        throw new KeyNotFoundException($"Tags not found: {string.Join(", ", notFoundIds)}");
-                    }
+                    //if (tags.Count != tagIds.Count)
+                    //{
+                    //    var notFoundIds = tagIds.Except(tags.Select(t => t.TagId)).ToList();
+                    //    throw new KeyNotFoundException($"Tags not found: {string.Join(", ", notFoundIds)}");
+                    //}
 
-                    
-                        existingArticle.Tags = tags;
+                    foreach (var tag in tags)
+                    {
+                        existingArticle.Tags.Add(tag);
+                    }
                 }
             }
 
-            await _unitOfWork.NewsArticleRepository.UpdateAsync(existingArticle);
+            await _unitOfWork.NewsArticleRepository.SaveAsync();
         }
 
         public async Task DeleteAsync(int id)

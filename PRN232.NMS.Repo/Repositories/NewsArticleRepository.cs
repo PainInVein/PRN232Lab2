@@ -49,6 +49,13 @@ namespace PRN232.NMS.Repo.Repositories
                 .FirstOrDefaultAsync();
         }
 
+        public async Task<NewsArticle?> GetAllArticleForUpdate(int articleId)
+        {
+            return await _context.NewsArticles
+                .Include(a => a.Category)
+                .Include(a => a.Tags)
+                .FirstOrDefaultAsync(a => a.NewsArticleId == articleId);
+        }
         public async Task<(List<NewsArticle> Items, int TotalItems)> GetPagedAsync(
             string? searchTerm,
             int? categoryId,

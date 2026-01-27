@@ -3,6 +3,7 @@ using PRN232.NMS.Repo.Basic;
 using PRN232.NMS.Repo.DBContext;
 using PRN232.NMS.Repo.EntityModels;
 using System.Threading.Tasks;
+using BC = BCrypt.Net.BCrypt;
 
 namespace PRN232.NMS.Repo.Repositories
 {
@@ -93,8 +94,17 @@ namespace PRN232.NMS.Repo.Repositories
 
         public async Task<SystemAccount?> LoginAsync(string email, string password)
         {
-            return await _context.SystemAccounts
-                .FirstOrDefaultAsync(ua => ua.AccountEmail == email && ua.AccountPassword == password);
+            var result = await _context.SystemAccounts
+                .FirstOrDefaultAsync(ua => ua.AccountEmail == email );
+
+            var verifyPassword = result != null && BC.Verify(password, result.AccountPassword);
+
+            if (!verifyPassword)
+            {
+                return null;
+            }
+
+            return result;
         }
 
         public async Task<bool> IsEmailExist(string email)

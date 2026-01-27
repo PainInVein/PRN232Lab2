@@ -1,6 +1,8 @@
 ﻿using PRN232.NMS.Repo;
 using PRN232.NMS.Repo.EntityModels;
 using PRN232.NMS.Services.Interfaces;
+using BC = BCrypt.Net.BCrypt;
+
 namespace PRN232.NMS.Services
 {
     public class AuthService : IAuthService
@@ -16,6 +18,7 @@ namespace PRN232.NMS.Services
 
         public async Task<string> LoginAsync(string email, string password)
         {
+
             var user = await _unitOfWork.SystemUserAccountRepository.LoginAsync(email, password);
             if (user == null)
             {
@@ -41,7 +44,7 @@ namespace PRN232.NMS.Services
             {
                 AccountEmail = email,
                 AccountName = name,
-                AccountPassword = password,
+                AccountPassword = BC.HashPassword(password),
                 AccountRole = "Reporter"
             };
 

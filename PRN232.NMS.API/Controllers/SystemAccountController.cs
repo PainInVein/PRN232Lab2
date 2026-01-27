@@ -21,23 +21,23 @@ namespace PRN232.NMS.API.Controllers
             _mapper = mapper;
         }
 
-        [HttpPost("authentication")]
-        public async Task<IActionResult> Login([FromBody] LoginRequest loginRequest)
-        {
-            var userAccount = await _systemAccountService.GetUserAccount(loginRequest.Username, loginRequest.Password);
+        //[HttpPost("authentication")]
+        //public async Task<IActionResult> Login([FromBody] LoginRequest loginRequest)
+        //{
+        //    var userAccount = await _systemAccountService.GetUserAccount(loginRequest.Username, loginRequest.Password);
 
-            var mappedUser = _mapper.Map<LoginResponse>(userAccount);
+        //    var mappedUser = _mapper.Map<LoginResponse>(userAccount);
 
 
-            if (mappedUser != null)
-            {
-                var response = new ResponseDTO<LoginResponse>(message: "Login successfully", isSuccess: true, data: mappedUser, errors: null);
+        //    if (mappedUser != null)
+        //    {
+        //        var response = new ResponseDTO<LoginResponse>(message: "Login successfully", isSuccess: true, data: mappedUser, errors: null);
 
-                return Ok(response);
-            }
+        //        return Ok(response);
+        //    }
 
-            return Unauthorized(new ResponseDTO<LoginResponse>(message: "Failed", isSuccess: true, data: null, errors: null));
-        }
+        //    return Unauthorized(new ResponseDTO<LoginResponse>(message: "Failed", isSuccess: true, data: null, errors: null));
+        //}
 
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(int id)
