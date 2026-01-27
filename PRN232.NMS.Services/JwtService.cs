@@ -36,7 +36,7 @@ namespace PRN232.NMS.Services
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
                 new Claim(JwtRegisteredClaimNames.Sub, account.AccountId.ToString()),
                 new Claim(JwtRegisteredClaimNames.Email, account.AccountEmail),
-                new Claim("Role", account.AccountRole),
+                new Claim("role", account.AccountRole),
             };
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_key));

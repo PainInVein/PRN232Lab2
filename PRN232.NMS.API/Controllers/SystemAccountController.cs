@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PRN232.NMS.API.Models.RequestModels.SystemAccountRequests;
 using PRN232.NMS.API.Models.ResponseModels;
@@ -10,6 +11,8 @@ namespace PRN232.NMS.API.Controllers
 {
     [ApiController]
     [Route("api/system-accounts")]
+    [Produces("application/json")]
+    [Authorize]
     public class SystemAccountController : ControllerBase
     {
         private readonly ISystemAccountService _systemAccountService;
@@ -53,6 +56,7 @@ namespace PRN232.NMS.API.Controllers
         }
 
         [HttpGet]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> GetAll([FromQuery] int page = 1, [FromQuery] int pageSize = 10, [FromQuery] string? searchTerm = null, [FromQuery] string? sortBy = null, [FromQuery] bool isDescending = false)
         {
             var pagedResult = await _systemAccountService.GetUsersPagedAsync(page, pageSize, searchTerm, sortBy, isDescending);
@@ -71,6 +75,7 @@ namespace PRN232.NMS.API.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Create([FromBody] CreateSystemAccountRequest request)
         {
             var entity = _mapper.Map<SystemAccount>(request);
@@ -81,6 +86,7 @@ namespace PRN232.NMS.API.Controllers
         }
 
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(int id)
         {
             var result = await _systemAccountService.DeleteUserAsync(id);
@@ -94,6 +100,7 @@ namespace PRN232.NMS.API.Controllers
         }
 
         [HttpPut("{id}")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Update(int id, [FromBody] UpdateSystemAccountRequest request)
         {
             var entity = _mapper.Map<SystemAccount>(request);

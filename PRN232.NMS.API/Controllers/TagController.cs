@@ -11,6 +11,7 @@ namespace PRN232.NMS.API.Controllers
 {
     [Route("api/tags")]
     [ApiController]
+    [Produces("application/json")]
     [Authorize]
     public class TagController : ControllerBase
     {
@@ -62,6 +63,7 @@ namespace PRN232.NMS.API.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> CreateTagAsync([FromBody] CreateTagRequest createTagRequest)
         {
             var mappedRequest = _mapper.Map<Tag>(createTagRequest);
@@ -77,6 +79,7 @@ namespace PRN232.NMS.API.Controllers
         }
 
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteTagAsync([FromRoute] int id)
         {
 
@@ -92,6 +95,7 @@ namespace PRN232.NMS.API.Controllers
         }
 
         [HttpPut("{id}")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Update(int id, [FromBody] UpdateTagRequest request)
         {
 

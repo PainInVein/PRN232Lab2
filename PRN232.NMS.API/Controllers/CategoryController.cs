@@ -1,4 +1,5 @@
 using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PRN232.NMS.API.Models.RequestModels.CategoryRequests;
 using PRN232.NMS.API.Models.ResponseModels;
@@ -15,6 +16,7 @@ namespace PRN232.NMS.API.Controllers
     [Route("api/categories")]
     [ApiController]
     [Produces("application/json")]
+    [Authorize]
     public class CategoryController : ControllerBase
     {
         private readonly ICategoryService _categoryService;
@@ -33,6 +35,7 @@ namespace PRN232.NMS.API.Controllers
         [HttpGet]
         [ProducesResponseType(typeof(ResponseDTO<object>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ResponseDTO<object>), StatusCodes.Status500InternalServerError)]
+
         public async Task<IActionResult> GetCategories([FromQuery] CategoryFilterRequest filter)
         {
             var page = Math.Max(1, filter.Page);
@@ -103,6 +106,7 @@ namespace PRN232.NMS.API.Controllers
         [ProducesResponseType(typeof(ResponseDTO<object>), StatusCodes.Status201Created)]
         [ProducesResponseType(typeof(object), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ResponseDTO<object>), StatusCodes.Status500InternalServerError)]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> CreateCategory([FromBody] CreateCategoryRequest request)
         {
             var entity = _mapper.Map<Category>(request);
@@ -119,6 +123,7 @@ namespace PRN232.NMS.API.Controllers
         [ProducesResponseType(typeof(ResponseDTO<object>), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(object), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ResponseDTO<object>), StatusCodes.Status500InternalServerError)]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> UpdateCategory([FromRoute] int id, [FromBody] UpdateCategoryRequest request)
         {
             var entity = _mapper.Map<Category>(request);
@@ -137,6 +142,7 @@ namespace PRN232.NMS.API.Controllers
         [ProducesResponseType(typeof(ResponseDTO<object>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ResponseDTO<object>), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(ResponseDTO<object>), StatusCodes.Status500InternalServerError)]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteCategory([FromRoute] int id)
         {
             var result = await _categoryService.DeleteAsync(id);
