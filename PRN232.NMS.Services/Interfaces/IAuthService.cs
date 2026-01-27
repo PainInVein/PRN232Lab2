@@ -1,4 +1,5 @@
-﻿using PRN232.NMS.Services.Models.RequestModels.Auth;
+﻿using PRN232.NMS.Services.Models;
+using PRN232.NMS.Services.Models.RequestModels.Auth;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,7 +11,7 @@ namespace PRN232.NMS.Services.Interfaces
     public interface IAuthService
     {
         Task<string> LoginAsync(LoginRequestModel request);
-        Task<bool> RegisterAsync(string email, string password);
         Task LogoutAsync();
+        Task<object> RegisterAsync(RegisterRequestModel request);
     }
 }
