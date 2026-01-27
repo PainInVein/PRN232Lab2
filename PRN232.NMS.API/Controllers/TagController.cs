@@ -27,8 +27,7 @@ namespace PRN232.NMS.API.Controllers
         [HttpGet("{id}")]
         public async Task<IActionResult> GetTagById(int id)
         {
-            try
-            {
+          
                 var tag = await _tagService.GetByIdAsync(id);
                 if (tag != null)
                 {
@@ -37,18 +36,13 @@ namespace PRN232.NMS.API.Controllers
                     return Ok(response);
                 }
                 return NotFound(new ResponseDTO<GetTagByIdResponse>(message: "Tag not found", isSuccess: false, data: null, errors: null));
-            }catch(Exception e)
-            {
-                return StatusCode(StatusCodes.Status500InternalServerError, new ResponseDTO<object>($"Tag retrieval failed: {e.Message}", false, null, null));
-            }
             
         }
 
         [HttpGet]
         public async Task<IActionResult> GetAllTags([FromQuery] TagFilterRequest tagFilterRequest)
         {
-            try
-            {
+           
                 var pagedTags = await _tagService.GetTagsPagedAsync(tagFilterRequest.Page, tagFilterRequest.PageSize, tagFilterRequest.SearchName, tagFilterRequest.SortOption, tagFilterRequest.NewArticleIds);
                 var mappedTags = _mapper.Map<List<GetAllTagResponse>>(pagedTags.Items);
 
@@ -65,11 +59,7 @@ namespace PRN232.NMS.API.Controllers
                 var response = new ResponseDTO<PagedResult<GetAllTagResponse>>(message: "Tags retrieved successfully", isSuccess: true, data: pagedResponse, errors: null);
 
                 return Ok(response);
-            }
-            catch (Exception e)
-            {
-                return StatusCode(StatusCodes.Status500InternalServerError, new ResponseDTO<object>($"Tag creation failed: {e.Message}", false, null, null));
-            }
+            
         }
 
         [HttpPost]
@@ -77,17 +67,12 @@ namespace PRN232.NMS.API.Controllers
         {
             var mappedRequest = _mapper.Map<Tag>(createTagRequest);
 
-            try
-            {
+            
                 await _tagService.CreateTagAsync(mappedRequest);
 
                 // Implementation for creating a tag would go here
                 return StatusCode(201, new ResponseDTO<object>("Tag created successfully", true, null, null));
-            }
-            catch(Exception e)
-            {
-                return StatusCode(StatusCodes.Status500InternalServerError, new ResponseDTO<object>($"Tag creation failed: {e.Message}", false, null, null));
-            }
+            
 
             
         }
@@ -95,8 +80,7 @@ namespace PRN232.NMS.API.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteTagAsync([FromRoute] int id)
         {
-            try
-            {
+           
                 var result = await _tagService.DeleteTagAsync(id);
 
                 if(result != string.Empty)
@@ -105,18 +89,13 @@ namespace PRN232.NMS.API.Controllers
                 }
 
                 return Ok(new ResponseDTO<object>("Tag deleted successfully", true, null, null));
-            }
-            catch (Exception e)
-            {
-                return StatusCode(StatusCodes.Status500InternalServerError, new ResponseDTO<object>($"Tag deletion failed: {e.Message}", false, null, null));
-            }
+           
         }
 
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(int id, [FromBody] UpdateTagRequest request)
         {
-            try
-            {
+            
                 var entity = _mapper.Map<Tag>(request);
                 var result = await _tagService.UpdateTagAsync(id, entity);
 
@@ -126,11 +105,6 @@ namespace PRN232.NMS.API.Controllers
                 }
 
                 return Ok(new ResponseDTO<object>("Tag updated successfully", true, null, null));
-            }
-            catch (Exception e)
-            {
-                return StatusCode(StatusCodes.Status500InternalServerError, new ResponseDTO<object>($"Tag modification failed: {e.Message}", false, null, null));
-            }
             
         }
     }
