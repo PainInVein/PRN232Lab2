@@ -1,7 +1,6 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using PRN232.NMS.API.Models.RequestModels;
 using PRN232.NMS.API.Models.RequestModels.NewsArticleRequests;
 using PRN232.NMS.API.Models.ResponseModels;
 using PRN232.NMS.API.Models.ResponseModels.NewsArticleResponse;
@@ -13,7 +12,8 @@ namespace PRN232.NMS.API.Controllers
 {
     [Route("api/newsarticles")]
     [ApiController]
-    [AllowAnonymous]
+    [Produces("application/json")]
+    [Authorize]
     public class NewsArticleController : ControllerBase
     {
         private readonly INewsArticleService _newsService;
@@ -52,6 +52,7 @@ namespace PRN232.NMS.API.Controllers
         }
 
         [HttpGet("{id}")]
+        
         public async Task<IActionResult> GetById(int id)
         {
             var article = await _newsService.GetByIdAsync(id);
@@ -65,7 +66,7 @@ namespace PRN232.NMS.API.Controllers
         }
 
         [HttpPost]
-        [Authorize]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Create([FromBody] CreateNewsArticleRequest request)
         {
             if (!ModelState.IsValid)
@@ -91,44 +92,34 @@ namespace PRN232.NMS.API.Controllers
         }
 
         [HttpPut("{id}")]
-        [Authorize]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Update(int id, [FromBody] UpdateNewsArticleRequest request)
         {
-            if (!ModelState.IsValid) return BadRequest(ModelState);
-
-            try
+            if (!ModelState.IsValid)
             {
-                var entity = _mapper.Map<NewsArticle>(request);
+                return BadRequest(new ResponseDTO<object>("Validation failed", false, null, "Invalid input data"));
+            }
 
-                var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? User.FindFirst("Id")?.Value;
-                if (int.TryParse(userIdClaim, out int userId)) entity.UpdatedById = userId;
+            var entity = _mapper.Map<NewsArticle>(request);
 
-                await _newsService.UpdateAsync(id, entity, request.TagIds);
-                return Ok(new ResponseDTO<object>("Article updated successfully", true, null, null));
-            }
-            catch (KeyNotFoundException)
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? User.FindFirst("Id")?.Value;
+            if (int.TryParse(userIdClaim, out int userId))
             {
-                return NotFound(new ResponseDTO<object>("Article not found", false, null, null));
+                entity.UpdatedById = userId;
             }
-            catch (Exception ex)
-            {
-                return StatusCode(500, new ResponseDTO<object>("Internal Error", false, null, ex.Message));
-            }
+
+            await _newsService.UpdateAsync(id, entity, request.TagIds);
+
+            return Ok(new ResponseDTO<object>("Article updated successfully", true, null, null));
         }
 
         [HttpDelete("{id}")]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(int id)
         {
-            try
-            {
-                await _newsService.DeleteAsync(id);
-                return Ok(new ResponseDTO<object>("Article deleted successfully", true, null, null));
-            }
-            catch (KeyNotFoundException)
-            {
-                return NotFound(new ResponseDTO<object>("Article not found", false, null, null));
-            }
+            await _newsService.DeleteAsync(id);
+
+            return Ok(new ResponseDTO<object>("Article deleted successfully", true, null, null));
         }
     }
 }

@@ -1,8 +1,8 @@
-using Microsoft.AspNetCore.Diagnostics;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
+using PRN232.NMS.API.Extensions;
 using PRN232.NMS.API.Models.MappingTool;
-using PRN232.NMS.API.Models.RequestModels;
 using PRN232.NMS.API.Models.ResponseModels;
+using PRN232.NMS.Repo;
 using PRN232.NMS.Services;
 using PRN232.NMS.Services.Interfaces;
 
@@ -12,9 +12,15 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddScoped<ISystemAccountService, SystemAccountService>();
 builder.Services.AddScoped<ITagService, TagService>();
 builder.Services.AddScoped<INewsArticleService, NewsArticleService>();
+builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<ICategoryService, CategoryService>();
+builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<IJwtService, JwtService>();
 
 builder.Services.AddControllers();
+
+builder.Services.AuthenticationServices(builder);
+builder.Services.SwaggerServices(builder);
 
 //Customizing Model Validation Error Response
 builder.Services.Configure<ApiBehaviorOptions>(options =>
@@ -28,12 +34,12 @@ builder.Services.Configure<ApiBehaviorOptions>(options =>
                 kvp => kvp.Value!.Errors.Select(e => e.ErrorMessage).ToArray()
             );
 
-        var response = new
+        var response = new ResponseDTO<object>()
         {
-            message = "Validation failed",
-            isSuccess = false,
-            data = errors,
-            errors = (string?)null
+            Message = "Validation failed",
+            IsSuccess = false,
+            Data = null,
+            Errors = errors
         };
 
         return new BadRequestObjectResult(response);
@@ -46,7 +52,7 @@ builder.Services.AddSwaggerGen();
 
 
 //Mapper
-builder.Services.AddAutoMapper(typeof(MappingProfile).Assembly);
+builder.Services.AddAutoMapper(cfg => cfg.AddProfile<MappingProfile>());
 
 var app = builder.Build();
 app.UseMiddleware<PRN232.NMS.API.Middlewares.ExceptionMiddleware>();
@@ -60,22 +66,22 @@ if (app.Environment.IsDevelopment())
 
 //app.UseHttpsRedirection();
 
-app.UseExceptionHandler(appError =>
-{
-    appError.Run(async context =>
-    {
-        context.Response.StatusCode = StatusCodes.Status500InternalServerError;
-        context.Response.ContentType = "application/json";
-        var feature = context.Features.Get<IExceptionHandlerFeature>();
-        var ex = feature?.Error;
-        var response = new ResponseDTO<object>(
-            "An error occurred while processing your request.",
-            false,
-            null,
-            null);
-        await context.Response.WriteAsJsonAsync(response);
-    });
-});
+//app.UseExceptionHandler(appError =>
+//{
+//    appError.Run(async context =>
+//    {
+//        context.Response.StatusCode = StatusCodes.Status500InternalServerError;
+//        context.Response.ContentType = "application/json";
+//        var feature = context.Features.Get<IExceptionHandlerFeature>();
+//        var ex = feature?.Error;
+//        var response = new ResponseDTO<object>(
+//            "An error occurred while processing your request.",
+//            false,
+//            null,
+//            null);
+//        await context.Response.WriteAsJsonAsync(response);
+//    });
+//});
 
 app.UseAuthorization();
 

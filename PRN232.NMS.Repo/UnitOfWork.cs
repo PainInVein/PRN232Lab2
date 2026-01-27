@@ -1,7 +1,7 @@
 using PRN232.NMS.Repo.DBContext;
 using PRN232.NMS.Repo.Repositories;
 
-namespace Repositories
+namespace PRN232.NMS.Repo
 {
     public interface IUnitOfWork
     {

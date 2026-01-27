@@ -1,5 +1,5 @@
-﻿using EVCMS.Repositories.BinhLS.Basic;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
+using PRN232.NMS.Repo.Basic;
 using PRN232.NMS.Repo.DBContext;
 using PRN232.NMS.Repo.EntityModels;
 using System;
@@ -193,5 +193,16 @@ namespace PRN232.NMS.Repo.Repositories
 
             return result;
         }
+
+        public async Task<List<Tag>> GetByIdsAsync(List<int> tagIds)
+        {
+            if (tagIds == null || !tagIds.Any())
+                return new List<Tag>();
+
+            return await _context.Tags
+                .Where(t => tagIds.Contains(t.TagId))
+                .ToListAsync();
+        }
+
     }
 }

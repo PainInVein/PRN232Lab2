@@ -1,8 +1,10 @@
 using AutoMapper;
+using PRN232.NMS.API.Models.RequestModels.Auth;
 using PRN232.NMS.API.Models.RequestModels.CategoryRequests;
 using PRN232.NMS.API.Models.RequestModels.NewsArticleRequests;
 using PRN232.NMS.API.Models.RequestModels.SystemAccountRequests;
 using PRN232.NMS.API.Models.RequestModels.TagRequests;
+using PRN232.NMS.API.Models.ResponseModels.CategoryResponses;
 using PRN232.NMS.API.Models.ResponseModels.NewsArticleResponse;
 using PRN232.NMS.API.Models.ResponseModels.SystemAccountResponses;
 using PRN232.NMS.API.Models.ResponseModels.TagResponses;
@@ -21,13 +23,13 @@ namespace PRN232.NMS.API.Models.MappingTool
             CreateMap<UpdateSystemAccountRequest, SystemAccount>()
                 .ForAllMembers(opts => opts.Condition((src, dest, srcMember) => srcMember != null));
 
-            CreateMap<Tag, GetByIdResponse>()
+            CreateMap<Tag, GetTagByIdResponse>()
             .ForMember(dest => dest.NewsArticles,
                        opt => opt.MapFrom(src => src.NewsArticles));
 
             CreateMap<NewsArticle, RelatedNewsArticleResponse>();
 
-            CreateMap<Tag, GetAllResponse>();
+            CreateMap<Tag, GetAllTagResponse>();
 
             CreateMap<CreateNewsArticleRequest, NewsArticle>();
             CreateMap<UpdateNewsArticleRequest, NewsArticle>();
@@ -42,11 +44,14 @@ namespace PRN232.NMS.API.Models.MappingTool
 
             CreateMap<CreateCategoryRequest, Category>();
             CreateMap<UpdateCategoryRequest, Category>();
-            CreateMap<Category, PRN232.NMS.API.Models.ResponseModels.CategoryResponses.GetByIdResponse>()
+            CreateMap<Category, ResponseModels.CategoryResponses.GetByIdResponse>()
                 .ForMember(dest => dest.ParentCategoryName, opt => opt.MapFrom(src => src.ParentCategory != null ? src.ParentCategory.CategoryName : null))
                 .ForMember(dest => dest.ChildCategories, opt => opt.MapFrom(src => src.InverseParentCategory));
-            CreateMap<Category, PRN232.NMS.API.Models.ResponseModels.CategoryResponses.GetAllResponse>();
-            CreateMap<Category, PRN232.NMS.API.Models.ResponseModels.CategoryResponses.CategoryMinimalResponse>();
+            CreateMap<Category, ResponseModels.CategoryResponses.GetAllResponse>();
+            CreateMap<Category, CategoryMinimalResponse>();
+
+            CreateMap<SystemAccount, LoginRequestModel>().ReverseMap();
+            CreateMap<SystemAccount, RegisterRequestModel>().ReverseMap();
         }
     }
 }

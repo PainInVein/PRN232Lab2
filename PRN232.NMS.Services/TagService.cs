@@ -1,6 +1,6 @@
-﻿using PRN232.NMS.Repo.EntityModels;
+﻿using PRN232.NMS.Repo;
+using PRN232.NMS.Repo.EntityModels;
 using PRN232.NMS.Services.Interfaces;
-using Repositories;
 
 namespace PRN232.NMS.Services
 {
@@ -20,7 +20,6 @@ namespace PRN232.NMS.Services
             {
                 throw new Exception(ex.Message + "\n");
             }
-            return null;
         }
 
         public async Task<(List<Tag> Items, int TotalItems)> GetTagsPagedAsync(int page, int pageSize, string? searchTerm, string? sortOption, List<int>? newArticleIds)

@@ -1,5 +1,3 @@
-using PRN232.NMS.API.Models.RequestModels;
-
 namespace PRN232.NMS.API.Models.RequestModels.CategoryRequests
 {
     /// <summary>

@@ -1,6 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-
-namespace PRN232.NMS.API.Models.RequestModels.TagRequests
+﻿namespace PRN232.NMS.API.Models.RequestModels.TagRequests
 {
     public class TagFilterRequest : PagedRequest
     {

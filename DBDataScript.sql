@@ -1,4 +1,7 @@
-﻿INSERT INTO SystemAccount (AccountName, AccountEmail, AccountRole, AccountPassword)
+﻿use Prn312class
+go
+
+INSERT INTO SystemAccount (AccountName, AccountEmail, AccountRole, AccountPassword)
 VALUES
 (N'Nguyen Van An',  'an.nguyen@example.com',   'Editor',   'hashed_pw_1'),
 (N'Tran Thi Binh',  'binh.tran@example.com',   'Reporter', 'hashed_pw_2'),

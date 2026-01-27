@@ -1,6 +1,6 @@
 ﻿namespace PRN232.NMS.API.Models.ResponseModels.TagResponses
 {
-    public class GetByIdResponse
+    public class GetTagByIdResponse
     {
         public int TagId { get; set; }
 

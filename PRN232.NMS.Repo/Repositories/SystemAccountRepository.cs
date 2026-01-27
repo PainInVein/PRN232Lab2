@@ -1,7 +1,9 @@
-﻿using EVCMS.Repositories.BinhLS.Basic;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
+using PRN232.NMS.Repo.Basic;
 using PRN232.NMS.Repo.DBContext;
 using PRN232.NMS.Repo.EntityModels;
+using System.Threading.Tasks;
+using BC = BCrypt.Net.BCrypt;
 
 namespace PRN232.NMS.Repo.Repositories
 {
@@ -10,18 +12,10 @@ namespace PRN232.NMS.Repo.Repositories
         public SystemAccountRepository() { }
         public SystemAccountRepository(Prn312classDbContext context) : base(context) { }
 
-        public async Task<SystemAccount> GetUsernameAsync(string username, string password)
+        public async Task<SystemAccount?> GetByUsernameAsync(string username)
         {
             return await _context.SystemAccounts
-                .Where(ua => ua.AccountName == username && ua.AccountPassword == password)
-                .Select(ua => new SystemAccount
-                {
-                    AccountId = ua.AccountId,
-                    AccountName = ua.AccountName,
-                    AccountEmail = ua.AccountEmail,
-                    AccountRole = ua.AccountRole
-                })
-                .FirstOrDefaultAsync();
+                .FirstOrDefaultAsync(ua => ua.AccountName == username);
         }
 
         public async Task<SystemAccount?> GetByIdWithDetailsAsync(int id)
@@ -96,6 +90,27 @@ namespace PRN232.NMS.Repo.Repositories
         public async Task<int> CountAsync()
         {
             return await _context.SystemAccounts.CountAsync();
+        }
+
+        public async Task<SystemAccount?> LoginAsync(string email, string password)
+        {
+            var result = await _context.SystemAccounts
+                .FirstOrDefaultAsync(ua => ua.AccountEmail == email );
+
+            var verifyPassword = result != null && BC.Verify(password, result.AccountPassword);
+
+            if (!verifyPassword)
+            {
+                return null;
+            }
+
+            return result;
+        }
+
+        public async Task<bool> IsEmailExist(string email)
+        {
+            return await _context.SystemAccounts
+                .AnyAsync(ua => ua.AccountEmail == email);
         }
     }
 }

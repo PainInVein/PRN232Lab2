@@ -1,5 +1,5 @@
-﻿using EVCMS.Repositories.BinhLS.Basic;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
+using PRN232.NMS.Repo.Basic;
 using PRN232.NMS.Repo.DBContext;
 using PRN232.NMS.Repo.EntityModels;
 using System.Linq.Expressions;
@@ -14,12 +14,48 @@ namespace PRN232.NMS.Repo.Repositories
         public async Task<NewsArticle?> GetByIdDetailedAsync(int id)
         {
             return await _context.NewsArticles
-                .Include(n => n.Category)
-                .Include(n => n.CreatedBy)
-                .Include(n => n.Tags)
-                .FirstOrDefaultAsync(n => n.NewsArticleId == id);
+                .Where(n => n.NewsArticleId == id)
+                .Select(n => new NewsArticle
+                {
+                    NewsArticleId = n.NewsArticleId,
+                    NewsTitle = n.NewsTitle,
+                    Headline = n.Headline,
+                    NewsContent = n.NewsContent,
+                    NewsSource = n.NewsSource,
+                    CreatedDate = n.CreatedDate,
+                    ModifiedDate = n.ModifiedDate,
+                    CategoryId = n.CategoryId,
+                    NewsStatusId = n.NewsStatusId,
+                    CreatedById = n.CreatedById,
+                    UpdatedById = n.UpdatedById,
+                    Category = new Category
+                    {
+                        CategoryId = n.Category.CategoryId,
+                        CategoryName = n.Category.CategoryName
+                    },
+                    CreatedBy = new SystemAccount
+                    {
+                        AccountId = n.CreatedBy.AccountId,
+                        AccountName = n.CreatedBy.AccountName,
+                        AccountEmail = n.CreatedBy.AccountEmail
+                    },
+                    Tags = n.Tags.Select(t => new Tag
+                    {
+                        TagId = t.TagId,
+                        TagName = t.TagName,
+                        Note = t.Note
+                    }).ToList()
+                })
+                .FirstOrDefaultAsync();
         }
 
+        public async Task<NewsArticle?> GetAllArticleForUpdate(int articleId)
+        {
+            return await _context.NewsArticles
+                .Include(a => a.Category)
+                .Include(a => a.Tags)
+                .FirstOrDefaultAsync(a => a.NewsArticleId == articleId);
+        }
         public async Task<(List<NewsArticle> Items, int TotalItems)> GetPagedAsync(
             string? searchTerm,
             int? categoryId,
@@ -29,11 +65,7 @@ namespace PRN232.NMS.Repo.Repositories
             int page,
             int pageSize)
         {
-            var query = _context.NewsArticles
-                .Include(n => n.Category)
-                .Include(n => n.CreatedBy)
-                .Include(n => n.Tags)
-                .AsQueryable();
+            var query = _context.NewsArticles.AsQueryable();
 
             if (!string.IsNullOrWhiteSpace(searchTerm))
             {
@@ -58,7 +90,39 @@ namespace PRN232.NMS.Repo.Repositories
             };
 
             var totalItems = await query.CountAsync();
-            var items = await query.Skip((page - 1) * pageSize).Take(pageSize).ToListAsync();
+
+            var items = await query
+                .Select(n => new NewsArticle
+                {
+                    NewsArticleId = n.NewsArticleId,
+                    NewsTitle = n.NewsTitle,
+                    Headline = n.Headline,
+                    NewsContent = n.NewsContent,
+                    NewsSource = n.NewsSource,
+                    CreatedDate = n.CreatedDate,
+                    CategoryId = n.CategoryId,
+                    NewsStatusId = n.NewsStatusId,
+                    CreatedById = n.CreatedById,
+                    UpdatedById = n.UpdatedById,
+                    Category = new Category
+                    {
+                        CategoryId = n.Category.CategoryId,
+                        CategoryName = n.Category.CategoryName
+                    },
+                    CreatedBy = new SystemAccount
+                    {
+                        AccountId = n.CreatedBy.AccountId,
+                        AccountName = n.CreatedBy.AccountName
+                    },
+                    Tags = n.Tags.Select(t => new Tag
+                    {
+                        TagId = t.TagId,
+                        TagName = t.TagName
+                    }).ToList()
+                })
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
 
             return (items, totalItems);
         }
