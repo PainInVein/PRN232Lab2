@@ -1,5 +1,7 @@
-﻿using PRN232.NMS.Repo;
+﻿using AutoMapper;
+using PRN232.NMS.Repo;
 using PRN232.NMS.Repo.EntityModels;
+using PRN232.NMS.Services.BusinessModel.NewsArticleModels;
 using PRN232.NMS.Services.Interfaces;
 
 namespace PRN232.NMS.Services
@@ -7,24 +9,36 @@ namespace PRN232.NMS.Services
     public class NewsArticleService : INewsArticleService
     {
         private readonly IUnitOfWork _unitOfWork;
+        private readonly IMapper _mapper;
 
-        public NewsArticleService()
+        public NewsArticleService(IUnitOfWork unitOfWork, IMapper mapper)
         {
-            _unitOfWork ??= new UnitOfWork();
+            _unitOfWork = unitOfWork;
+            _mapper = mapper;
         }
 
-        public async Task<(List<NewsArticle> Items, int TotalItems)> GetAllPagedAsync(
+        public async Task<(List<NewsArticleBusinessModel> Items, int TotalItems)> GetAllPagedAsync(
             string? searchTerm, int? categoryId, int? statusId, string? sortColumn, string? sortOrder, int page, int pageSize)
         {
-            return await _unitOfWork.NewsArticleRepository.GetPagedAsync(searchTerm, categoryId, statusId, sortColumn, sortOrder, page, pageSize);
+            var (items, totalItems) = await _unitOfWork.NewsArticleRepository.GetPagedAsync(
+                searchTerm, categoryId, statusId, sortColumn, sortOrder, page, pageSize);
+
+            var mappedItems = _mapper.Map<List<NewsArticleBusinessModel>>(items);
+
+            return (mappedItems, totalItems);
         }
 
-        public async Task<NewsArticle?> GetByIdAsync(int id)
+        public async Task<NewsArticleBusinessModel?> GetByIdAsync(int id)
         {
             if (id <= 0)
                 throw new ArgumentException("Article ID must be greater than 0", nameof(id));
 
-            return await _unitOfWork.NewsArticleRepository.GetByIdDetailedAsync(id);
+            var article = await _unitOfWork.NewsArticleRepository.GetByIdDetailedAsync(id);
+
+            if (article == null)
+                return null;
+
+            return _mapper.Map<NewsArticleBusinessModel>(article);
         }
 
         public async Task CreateAsync(NewsArticle article, List<int>? tagIds)
@@ -38,7 +52,6 @@ namespace PRN232.NMS.Services
             if (article.CategoryId <= 0)
                 throw new ArgumentException("Invalid category ID", nameof(article.CategoryId));
 
-            // Check category exists
             var category = await _unitOfWork.CategoryRepository.GetByIdAsync(article.CategoryId);
             if (category == null)
                 throw new KeyNotFoundException($"Category with ID {article.CategoryId} not found");
@@ -47,7 +60,6 @@ namespace PRN232.NMS.Services
             article.ModifiedDate = DateTime.Now;
             article.NewsStatusId = 1;
 
-            // Process tags - fetch all at once
             if (tagIds != null && tagIds.Any())
             {
                 var tags = await _unitOfWork.TagRepository.GetByIdsAsync(tagIds);
@@ -78,7 +90,6 @@ namespace PRN232.NMS.Services
             if (existingArticle == null)
                 throw new KeyNotFoundException($"Article with ID {id} not found");
 
-            // Validate category
             if (updatedArticle.CategoryId != existingArticle.CategoryId)
             {
                 var category = await _unitOfWork.CategoryRepository.GetByIdAsync(updatedArticle.CategoryId);
@@ -101,12 +112,6 @@ namespace PRN232.NMS.Services
                 if (tagIds.Any())
                 {
                     var tags = await _unitOfWork.TagRepository.GetByIdsAsync(tagIds);
-
-                    //if (tags.Count != tagIds.Count)
-                    //{
-                    //    var notFoundIds = tagIds.Except(tags.Select(t => t.TagId)).ToList();
-                    //    throw new KeyNotFoundException($"Tags not found: {string.Join(", ", notFoundIds)}");
-                    //}
 
                     foreach (var tag in tags)
                     {

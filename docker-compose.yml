@@ -1,0 +1,37 @@
+﻿version: '3.8'
+
+services:
+  # Service Database (SQL Server)
+  db:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: prn232_sql_server
+    environment:
+      - ACCEPT_EULA=Y
+      - MSSQL_SA_PASSWORD=YourStrong@Passw0rd! # Mật khẩu mạnh
+    ports:
+      - "1433:1433"
+    volumes:
+      - sql_data:/var/opt/mssql
+      # Map các file SQL từ máy thật vào trong container để lát chạy script nạp data
+      - ./PRN312ClassDB.sql:/tmp/init-schema.sql
+      - ./DBDataScript.sql:/tmp/init-data.sql
+
+  # Service Web API
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: prn232_api
+    depends_on:
+      - db
+    ports:
+      - "5000:8080" # Map port 8080 của container ra port 5000 máy thật
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      # Ghi đè ConnectionString trong appsettings.json
+      # Lưu ý: "Server=db" trỏ tới tên service 'db' ở trên
+      # "Database=Prn312class" phải khớp với tên DB trong file PRN312ClassDB.sql
+      - ConnectionStrings__DefaultConnection=Server=db,1433;Database=Prn312class;User Id=sa;Password=YourStrong@Passw0rd!;TrustServerCertificate=True;
+
+volumes:
+  sql_data:

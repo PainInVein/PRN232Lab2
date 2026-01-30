@@ -14,6 +14,7 @@ namespace PRN232.NMS.API.Controllers
     [ApiController]
     [Produces("application/json")]
     [Authorize]
+    [AllowAnonymous]
     public class NewsArticleController : ControllerBase
     {
         private readonly INewsArticleService _newsService;
@@ -52,7 +53,6 @@ namespace PRN232.NMS.API.Controllers
         }
 
         [HttpGet("{id}")]
-        
         public async Task<IActionResult> GetById(int id)
         {
             var article = await _newsService.GetByIdAsync(id);
