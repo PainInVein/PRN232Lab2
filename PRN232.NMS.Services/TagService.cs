@@ -33,15 +33,16 @@ namespace PRN232.NMS.Services
             }
         }
 
-        public async Task<(List<Tag> Items, int TotalItems)> GetTagsPagedAsync(int page, int pageSize, string? searchTerm, string? sortOption, List<int>? newArticleIds)
+        public async Task<(List<TagForSearch> Items, int TotalItems)> GetTagsPagedAsync(int page, int pageSize, string? searchTerm, string? sortOption, List<int>? newArticleIds)
         {
             try
             {
                 var items = await _unitOfWork.TagRepository
                     .GetAllSimpleAsync((page - 1) * pageSize, pageSize, searchTerm, sortOption, newArticleIds);
 
+                var returnItem = _mapper.Map<List<TagForSearch>>(items.Items);
 
-                return (items.Items, items.TotalItems);
+                return (returnItem, items.TotalItems);
             }
             catch (Exception ex)
             {
@@ -49,9 +50,11 @@ namespace PRN232.NMS.Services
             }
         }
 
-        public async Task CreateTagAsync(Tag tag)
+        public async Task CreateTagAsync(TagAdd tag)
         {
-             await _unitOfWork.TagRepository.CreateAsync(tag);
+            var addTag = _mapper.Map<Tag>(tag);
+
+            await _unitOfWork.TagRepository.CreateAsync(addTag);
             
         }
 
@@ -63,7 +66,7 @@ namespace PRN232.NMS.Services
             return string.Empty;
         }
 
-        public async Task<string> UpdateTagAsync(int id, Tag updatedTag)
+        public async Task<string> UpdateTagAsync(int id, TagUpdate updatedTag)
         {
             var existingTag = await _unitOfWork.TagRepository.GetByIdAsync(id);
             if (existingTag == null) return "Tag not found";
