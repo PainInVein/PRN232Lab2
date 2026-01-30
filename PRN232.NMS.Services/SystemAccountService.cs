@@ -1,5 +1,7 @@
-﻿using PRN232.NMS.Repo;
+﻿using AutoMapper;
+using PRN232.NMS.Repo;
 using PRN232.NMS.Repo.EntityModels;
+using PRN232.NMS.Services.BusinessModel.SystemAccountModels;
 using PRN232.NMS.Services.Interfaces;
 using BC = BCrypt.Net.BCrypt;
 
@@ -8,8 +10,13 @@ namespace PRN232.NMS.Services
     public class SystemAccountService : ISystemAccountService
     {
         private readonly IUnitOfWork _unitOfWork;
+        private readonly IMapper _mapper;
 
-        public SystemAccountService() => _unitOfWork ??= new UnitOfWork();
+        public SystemAccountService(IMapper mapper)
+        {
+            _unitOfWork = new UnitOfWork();
+            _mapper = mapper;
+        }
 
         public async Task<SystemAccount?> GetUserAccount(string username, string password)
         {
@@ -23,17 +30,22 @@ namespace PRN232.NMS.Services
             return null;
 
         }
-        public async Task<SystemAccount?> GetByIdAsync(int id)
+        public async Task<SystemAccountBusinessModel?> GetByIdAsync(int id)
         {
-            return await _unitOfWork.SystemUserAccountRepository.GetByIdWithDetailsAsync(id);
+            var userEntity = await _unitOfWork.SystemUserAccountRepository.GetByIdAsync(id);
+            if (userEntity == null) return null;
+            return _mapper.Map<SystemAccountBusinessModel>(userEntity);
         }
 
-        public async Task<(List<SystemAccount> Items, int TotalItems)> GetUsersPagedAsync(
+        public async Task<(List<SystemAccountBusinessModel> Items, int TotalItems)> GetUsersPagedAsync(
             int page, int pageSize, string? searchTerm, string? sortBy, bool isDescending)
         {
             int skip = (page - 1) * pageSize;
-            return await _unitOfWork.SystemUserAccountRepository.GetAllPagedAsync(
+            var result = await _unitOfWork.SystemUserAccountRepository.GetAllPagedAsync(
                 skip, pageSize, searchTerm, sortBy, isDescending);
+            var businessModels = _mapper.Map<List<SystemAccountBusinessModel>>(result.Items);
+
+            return (businessModels, result.TotalItems);
         }
 
         public async Task CreateUserAsync(SystemAccount account)
