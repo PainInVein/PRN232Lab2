@@ -12,12 +12,12 @@ namespace PRN232.NMS.Services.Interfaces
     {
         Task<TagWithNewsArticle?> GetByIdAsync(int id);
 
-        Task<(List<Tag> Items, int TotalItems)> GetTagsPagedAsync(int page, int pageSize, string? searchTerm, string? sortOption, List<int>? newArticleIds);
+        Task<(List<TagForSearch> Items, int TotalItems)> GetTagsPagedAsync(int page, int pageSize, string? searchTerm, string? sortOption, List<int>? newArticleIds);
 
-        Task CreateTagAsync(Tag tag);
+        Task CreateTagAsync(TagAdd tag);
 
         Task<string> DeleteTagAsync(int id);
 
-        Task<string> UpdateTagAsync(int id, Tag updatedTag);
+        Task<string> UpdateTagAsync(int id, TagUpdate updatedTag);
     }
 }

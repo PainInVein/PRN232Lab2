@@ -35,7 +35,7 @@ namespace PRN232.NMS.Services.Models.MappingTool
 
             CreateMap<RelatedNewsArticleBusinessModel, RelatedNewsArticleResponse>();
 
-            CreateMap<Tag, GetAllTagResponse>();
+            CreateMap<TagForSearch, GetAllTagResponse>();
 
             CreateMap<CreateNewsArticleRequest, NewsArticle>();
             CreateMap<UpdateNewsArticleRequest, NewsArticle>();
@@ -44,9 +44,9 @@ namespace PRN232.NMS.Services.Models.MappingTool
                 .ForMember(dest => dest.CreatedByName, opt => opt.MapFrom(src => src.CreatedBy.AccountName))
                 .ForMember(dest => dest.Tags, opt => opt.MapFrom(src => src.Tags.Select(t => t.TagName).ToList()));
 
-            CreateMap<CreateTagRequest, Tag>();
+            CreateMap<CreateTagRequest, TagAdd>();
 
-            CreateMap<UpdateTagRequest, Tag>();
+            CreateMap<UpdateTagRequest, TagUpdate>();
 
             CreateMap<CreateCategoryRequest, Category>();
             CreateMap<UpdateCategoryRequest, Category>();
@@ -66,6 +66,10 @@ namespace PRN232.NMS.Services.Models.MappingTool
             CreateMap<Tag, TagWithNewsArticle>()
                 .ForMember(dest => dest.NewsArticles,
                            opt => opt.MapFrom(src => src.NewsArticles));
+
+            CreateMap<Tag, TagForSearch>();
+
+            CreateMap<TagAdd, Tag>();
 
             CreateMap<NewsArticleBusinessModel, NewsArticleResponse>();
             CreateMap<SystemAccount, SystemAccountBusinessModel>();

@@ -1,11 +1,11 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using PRN232.NMS.Services.BusinessModel.TagModels;
+using PRN232.NMS.Services.Interfaces;
 using PRN232.NMS.Services.Models.RequestModels.TagRequests;
 using PRN232.NMS.Services.Models.ResponseModels;
 using PRN232.NMS.Services.Models.ResponseModels.TagResponses;
-using PRN232.NMS.Repo.EntityModels;
-using PRN232.NMS.Services.Interfaces;
 
 namespace PRN232.NMS.API.Controllers
 {
@@ -66,7 +66,7 @@ namespace PRN232.NMS.API.Controllers
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> CreateTagAsync([FromBody] CreateTagRequest createTagRequest)
         {
-            var mappedRequest = _mapper.Map<Tag>(createTagRequest);
+            var mappedRequest = _mapper.Map<TagAdd>(createTagRequest);
 
 
             await _tagService.CreateTagAsync(mappedRequest);
@@ -99,7 +99,7 @@ namespace PRN232.NMS.API.Controllers
         public async Task<IActionResult> Update(int id, [FromBody] UpdateTagRequest request)
         {
 
-            var entity = _mapper.Map<Tag>(request);
+            var entity = _mapper.Map<TagUpdate>(request);
             var result = await _tagService.UpdateTagAsync(id, entity);
 
             if (result != string.Empty)
