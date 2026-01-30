@@ -10,6 +10,7 @@ using PRN232.NMS.Services.Models.ResponseModels.SystemAccountResponses;
 using PRN232.NMS.Services.Models.ResponseModels.TagResponses;
 using PRN232.NMS.Repo.EntityModels;
 using PRN232.NMS.Services.BusinessModel.TagModels;
+using PRN232.NMS.Services.BusinessModel.NewsArticleModels;
 
 namespace PRN232.NMS.Services.Models.MappingTool
 {
@@ -34,7 +35,7 @@ namespace PRN232.NMS.Services.Models.MappingTool
 
             CreateMap<CreateNewsArticleRequest, NewsArticle>();
             CreateMap<UpdateNewsArticleRequest, NewsArticle>();
-            CreateMap<NewsArticle, NewsArticleResponse>()
+            CreateMap<NewsArticle, NewsArticleBusinessModel>()
                 .ForMember(dest => dest.CategoryName, opt => opt.MapFrom(src => src.Category.CategoryName))
                 .ForMember(dest => dest.CreatedByName, opt => opt.MapFrom(src => src.CreatedBy.AccountName))
                 .ForMember(dest => dest.Tags, opt => opt.MapFrom(src => src.Tags.Select(t => t.TagName).ToList()));
@@ -61,6 +62,8 @@ namespace PRN232.NMS.Services.Models.MappingTool
             CreateMap<Tag, TagWithNewsArticle>()
                 .ForMember(dest => dest.NewsArticles,
                            opt => opt.MapFrom(src => src.NewsArticles));
+
+            CreateMap<NewsArticleBusinessModel, NewsArticleResponse>();
         }
     }
 }
