@@ -1,4 +1,7 @@
 using AutoMapper;
+using PRN232.NMS.Repo.EntityModels;
+using PRN232.NMS.Services.BusinessModel.SystemAccountModels;
+using PRN232.NMS.Services.BusinessModel.TagModels;
 using PRN232.NMS.Services.Models.RequestModels.Auth;
 using PRN232.NMS.Services.Models.RequestModels.CategoryRequests;
 using PRN232.NMS.Services.Models.RequestModels.NewsArticleRequests;
@@ -21,6 +24,7 @@ namespace PRN232.NMS.Services.Models.MappingTool
             // Request/ResponseDTO mappings
             CreateMap<SystemAccount, LoginResponse>();
             CreateMap<SystemAccount, UserResponse>();
+            CreateMap<SystemAccountBusinessModel, UserResponse>();
             CreateMap<CreateSystemAccountRequest, SystemAccount>();
             CreateMap<UpdateSystemAccountRequest, SystemAccount>()
                 .ForAllMembers(opts => opts.Condition((src, dest, srcMember) => srcMember != null));
@@ -64,6 +68,7 @@ namespace PRN232.NMS.Services.Models.MappingTool
                            opt => opt.MapFrom(src => src.NewsArticles));
 
             CreateMap<NewsArticleBusinessModel, NewsArticleResponse>();
+            CreateMap<SystemAccount, SystemAccountBusinessModel>();
         }
     }
 }
