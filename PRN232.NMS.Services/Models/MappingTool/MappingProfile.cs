@@ -1,4 +1,7 @@
 using AutoMapper;
+using PRN232.NMS.Repo.EntityModels;
+using PRN232.NMS.Services.BusinessModel.SystemAccountModels;
+using PRN232.NMS.Services.BusinessModel.TagModels;
 using PRN232.NMS.Services.Models.RequestModels.Auth;
 using PRN232.NMS.Services.Models.RequestModels.CategoryRequests;
 using PRN232.NMS.Services.Models.RequestModels.NewsArticleRequests;
@@ -8,8 +11,6 @@ using PRN232.NMS.Services.Models.ResponseModels.CategoryResponses;
 using PRN232.NMS.Services.Models.ResponseModels.NewsArticleResponse;
 using PRN232.NMS.Services.Models.ResponseModels.SystemAccountResponses;
 using PRN232.NMS.Services.Models.ResponseModels.TagResponses;
-using PRN232.NMS.Repo.EntityModels;
-using PRN232.NMS.Services.BusinessModel.TagModels;
 
 namespace PRN232.NMS.Services.Models.MappingTool
 {
@@ -20,6 +21,7 @@ namespace PRN232.NMS.Services.Models.MappingTool
             // Request/ResponseDTO mappings
             CreateMap<SystemAccount, LoginResponse>();
             CreateMap<SystemAccount, UserResponse>();
+            CreateMap<SystemAccountBusinessModel, UserResponse>();
             CreateMap<CreateSystemAccountRequest, SystemAccount>();
             CreateMap<UpdateSystemAccountRequest, SystemAccount>()
                 .ForAllMembers(opts => opts.Condition((src, dest, srcMember) => srcMember != null));
@@ -61,6 +63,7 @@ namespace PRN232.NMS.Services.Models.MappingTool
             CreateMap<Tag, TagWithNewsArticle>()
                 .ForMember(dest => dest.NewsArticles,
                            opt => opt.MapFrom(src => src.NewsArticles));
+            CreateMap<SystemAccount, SystemAccountBusinessModel>();
         }
     }
 }
