@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using PRN232.NMS.API.Extensions;
-using PRN232.NMS.API.Models.MappingTool;
-using PRN232.NMS.API.Models.ResponseModels;
+using PRN232.NMS.Services.Models.MappingTool;
+using PRN232.NMS.Services.Models.ResponseModels;
 using PRN232.NMS.Repo;
 using PRN232.NMS.Services;
 using PRN232.NMS.Services.Interfaces;
@@ -16,6 +16,8 @@ builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<ICategoryService, CategoryService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IJwtService, JwtService>();
+
+builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
 builder.Services.AddControllers();
 

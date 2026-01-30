@@ -1,9 +1,9 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using PRN232.NMS.API.Models.RequestModels.NewsArticleRequests;
-using PRN232.NMS.API.Models.ResponseModels;
-using PRN232.NMS.API.Models.ResponseModels.NewsArticleResponse;
+using PRN232.NMS.Services.Models.RequestModels.NewsArticleRequests;
+using PRN232.NMS.Services.Models.ResponseModels;
+using PRN232.NMS.Services.Models.ResponseModels.NewsArticleResponse;
 using PRN232.NMS.Repo.EntityModels;
 using PRN232.NMS.Services.Interfaces;
 using System.Security.Claims;

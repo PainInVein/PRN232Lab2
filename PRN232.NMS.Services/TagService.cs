@@ -1,5 +1,7 @@
-﻿using PRN232.NMS.Repo;
+﻿using AutoMapper;
+using PRN232.NMS.Repo;
 using PRN232.NMS.Repo.EntityModels;
+using PRN232.NMS.Services.BusinessModel.TagModels;
 using PRN232.NMS.Services.Interfaces;
 
 namespace PRN232.NMS.Services
@@ -7,14 +9,23 @@ namespace PRN232.NMS.Services
     public class TagService : ITagService
     {
         private readonly IUnitOfWork _unitOfWork;
+        private readonly IMapper _mapper;
 
-        public TagService() => _unitOfWork ??= new UnitOfWork();
+        public TagService(IUnitOfWork unitOfWork, IMapper mapper)
+        {
+            _unitOfWork = unitOfWork;
+            _mapper = mapper;
+        }
 
-        public async Task<Tag?> GetByIdAsync(int id)
+        public async Task<TagWithNewsArticle?> GetByIdAsync(int id)
         {
             try
             {
-                return await _unitOfWork.TagRepository.GetByTagIdAsync(id);
+                var serviceResult = await _unitOfWork.TagRepository.GetByTagIdAsync(id);
+
+                var result = _mapper.Map<TagWithNewsArticle>(serviceResult);
+
+                return result;
             }
             catch (Exception ex)
             {
