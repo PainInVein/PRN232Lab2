@@ -1,4 +1,5 @@
 ﻿using PRN232.NMS.Repo.EntityModels;
+using PRN232.NMS.Services.BusinessModel.TagModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,7 +10,7 @@ namespace PRN232.NMS.Services.Interfaces
 {
     public interface ITagService
     {
-        Task<Tag?> GetByIdAsync(int id);
+        Task<TagWithNewsArticle?> GetByIdAsync(int id);
 
         Task<(List<Tag> Items, int TotalItems)> GetTagsPagedAsync(int page, int pageSize, string? searchTerm, string? sortOption, List<int>? newArticleIds);
 

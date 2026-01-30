@@ -1,10 +1,10 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using PRN232.NMS.API.Models;
-using PRN232.NMS.API.Models.RequestModels.Auth;
-using PRN232.NMS.API.Models.ResponseModels;
-using PRN232.NMS.API.Models.ResponseModels.SystemAccountResponses;
+using PRN232.NMS.Services.Models;
+using PRN232.NMS.Services.Models.RequestModels.Auth;
+using PRN232.NMS.Services.Models.ResponseModels;
+using PRN232.NMS.Services.Models.ResponseModels.SystemAccountResponses;
 using PRN232.NMS.Services.Interfaces;
 
 namespace PRN232.NMS.API.Controllers

@@ -10,6 +10,10 @@
     <ProjectReference Include="..\PRN232.NMS.Repo\PRN232.NMS.Repo.csproj" />
   </ItemGroup>
 
+	<ItemGroup>
+		<PackageReference Include="AutoMapper" Version="16.0.0" />
+	</ItemGroup>
+
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.23" />
 	  
