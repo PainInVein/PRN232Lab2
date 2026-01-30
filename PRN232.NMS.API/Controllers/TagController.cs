@@ -1,9 +1,9 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using PRN232.NMS.API.Models.RequestModels.TagRequests;
-using PRN232.NMS.API.Models.ResponseModels;
-using PRN232.NMS.API.Models.ResponseModels.TagResponses;
+using PRN232.NMS.Services.Models.RequestModels.TagRequests;
+using PRN232.NMS.Services.Models.ResponseModels;
+using PRN232.NMS.Services.Models.ResponseModels.TagResponses;
 using PRN232.NMS.Repo.EntityModels;
 using PRN232.NMS.Services.Interfaces;
 
