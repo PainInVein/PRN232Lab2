@@ -13,6 +13,7 @@ using PRN232.NMS.Services.Models.ResponseModels.SystemAccountResponses;
 using PRN232.NMS.Services.Models.ResponseModels.TagResponses;
 using PRN232.NMS.Repo.EntityModels;
 using PRN232.NMS.Services.BusinessModel.TagModels;
+using PRN232.NMS.Services.BusinessModel.CategoryModels;
 using PRN232.NMS.Services.BusinessModel.NewsArticleModels;
 
 namespace PRN232.NMS.Services.Models.MappingTool
@@ -50,9 +51,13 @@ namespace PRN232.NMS.Services.Models.MappingTool
 
             CreateMap<CreateCategoryRequest, Category>();
             CreateMap<UpdateCategoryRequest, Category>();
-            CreateMap<Category, ResponseModels.CategoryResponses.GetByIdResponse>()
+            // BusinessModel Category (theo mẫu Tag): Entity -> CategoryWithRelated, CategoryWithRelated -> Response
+            CreateMap<Category, CategoryWithRelated>()
                 .ForMember(dest => dest.ParentCategoryName, opt => opt.MapFrom(src => src.ParentCategory != null ? src.ParentCategory.CategoryName : null))
                 .ForMember(dest => dest.ChildCategories, opt => opt.MapFrom(src => src.InverseParentCategory));
+            CreateMap<Category, CategoryMinimalBusinessModel>();
+            CreateMap<CategoryWithRelated, ResponseModels.CategoryResponses.GetByIdResponse>();
+            CreateMap<CategoryMinimalBusinessModel, CategoryMinimalResponse>();
             CreateMap<Category, ResponseModels.CategoryResponses.GetAllResponse>();
             CreateMap<Category, CategoryMinimalResponse>();
 

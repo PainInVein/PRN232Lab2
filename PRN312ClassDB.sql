@@ -18,6 +18,7 @@ CREATE TABLE SystemAccount (
     AccountRole     NVARCHAR(50) NOT NULL,           -- e.g. 'Admin', 'Editor', 'Reporter'
     AccountPassword NVARCHAR(255) NOT NULL            -- should be hashed
 );
+GO
 -- Suggestion: add these useful columns later if needed
 -- CreatedDate     DATETIME2 DEFAULT SYSUTCDATETIME(),
 -- LastLogin       DATETIME2 NULL
@@ -35,6 +36,7 @@ CREATE TABLE Category (
         FOREIGN KEY (ParentCategoryID) 
         REFERENCES Category(CategoryID)
 );
+GO
 -- Tip: consider adding a unique index on (ParentCategoryID, CategoryName) 
 -- if you want to prevent duplicate names in the same parent
 
@@ -65,7 +67,7 @@ CREATE TABLE NewsArticle (
         FOREIGN KEY (UpdatedByID) 
         REFERENCES SystemAccount(AccountID)
 );
-
+GO
 -- Optional: better status handling (instead of just NewsStatusID as int)
 -- You can either:
 -- A. Create a separate NewsStatus table
@@ -76,7 +78,7 @@ CREATE TABLE NewsArticle (
 ALTER TABLE NewsArticle
 ADD CONSTRAINT CHK_NewsStatusID 
 CHECK (NewsStatusID IN (1,2,3,4,5));  -- e.g. 1=draft, 2=review, 3=published, 4=archived, 5=deleted
-
+GO
 
 -- 4. Tag (simple tag master table)
 CREATE TABLE Tag (
@@ -84,7 +86,7 @@ CREATE TABLE Tag (
     TagName   NVARCHAR(100) NOT NULL UNIQUE,
     Note      NVARCHAR(500) NULL
 );
-
+GO
 
 -- 5. NewsTag (junction table - many-to-many between NewsArticle & Tag)
 CREATE TABLE NewsTag (
@@ -104,3 +106,4 @@ CREATE TABLE NewsTag (
         REFERENCES Tag(TagID)
         ON DELETE CASCADE
 );
+GO

@@ -1,4 +1,5 @@
 using PRN232.NMS.Repo.EntityModels;
+using PRN232.NMS.Services.BusinessModel.CategoryModels;
 
 namespace PRN232.NMS.Services.Interfaces
 {
@@ -13,7 +14,8 @@ namespace PRN232.NMS.Services.Interfaces
             int? parentCategoryId,
             string? sortBy,
             string? sortOrder);
-        Task<Category?> GetByIdAsync(int id);
+        /// <summary> Trả về business model (CategoryWithRelated), không trả Entity. Theo mẫu ITagService.GetByIdAsync. </summary>
+        Task<CategoryWithRelated?> GetByIdAsync(int id);
         Task CreateAsync(Category model);
         Task<string> DeleteAsync(int id);
         Task<string> UpdateAsync(int id, Category updatedCategory);

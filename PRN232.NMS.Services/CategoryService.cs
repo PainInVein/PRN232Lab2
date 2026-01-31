@@ -1,5 +1,7 @@
+using AutoMapper;
 using PRN232.NMS.Repo;
 using PRN232.NMS.Repo.EntityModels;
+using PRN232.NMS.Services.BusinessModel.CategoryModels;
 using PRN232.NMS.Services.Interfaces;
 
 namespace PRN232.NMS.Services
@@ -7,10 +9,12 @@ namespace PRN232.NMS.Services
     public class CategoryService : ICategoryService
     {
         private readonly IUnitOfWork _unitOfWork;
+        private readonly IMapper _mapper;
 
-        public CategoryService()
+        public CategoryService(IUnitOfWork unitOfWork, IMapper mapper)
         {
-            _unitOfWork ??= new UnitOfWork();
+            _unitOfWork = unitOfWork;
+            _mapper = mapper;
         }
 
         public async Task<IEnumerable<Category>> GetAllAsync()
@@ -33,9 +37,11 @@ namespace PRN232.NMS.Services
             return (items, totalItems);
         }
 
-        public async Task<Category?> GetByIdAsync(int id)
+        public async Task<CategoryWithRelated?> GetByIdAsync(int id)
         {
-            return await _unitOfWork.CategoryRepository.GetByCategoryIdAsync(id);
+            var entity = await _unitOfWork.CategoryRepository.GetByCategoryIdAsync(id);
+            if (entity == null) return null;
+            return _mapper.Map<CategoryWithRelated>(entity);
         }
 
         public async Task CreateAsync(Category model)
