@@ -13,6 +13,8 @@ using PRN232.NMS.Services.Models.ResponseModels.SystemAccountResponses;
 using PRN232.NMS.Services.Models.ResponseModels.TagResponses;
 using PRN232.NMS.Repo.EntityModels;
 using PRN232.NMS.Services.BusinessModel.TagModels;
+using PRN232.NMS.Services.BusinessModel.CategoryModels;
+using PRN232.NMS.Services.BusinessModel.NewsArticleModels;
 
 namespace PRN232.NMS.Services.Models.MappingTool
 {
