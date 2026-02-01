@@ -51,6 +51,15 @@ namespace PRN232.NMS.Repo.Repositories
         }
 
         /// <summary>
+        /// Đánh dấu entity đã thay đổi để EF emit UPDATE. Tránh trường hợp SaveChanges trả về 0 vì không detect change.
+        /// </summary>
+        public void MarkAsModified(Category entity)
+        {
+            if (entity == null) return;
+            _context.Entry(entity).State = EntityState.Modified;
+        }
+
+        /// <summary>
         /// Tìm category theo tên (không phân biệt hoa thường). Dùng kiểm tra trùng khi tạo, giống TagRepository.GetByNameAsync.
         /// </summary>
         public async Task<Category?> GetByNameAsync(string categoryName)

@@ -100,10 +100,10 @@ namespace PRN232.NMS.API.Controllers
         }
 
         /// <summary>
-        /// POST Create. Validates via CreateCategoryRequest.
+        /// POST Create. Trả về category đã tạo (categoryId, categoryName) để client dùng id cho PUT/DELETE.
         /// </summary>
         [HttpPost]
-        [ProducesResponseType(typeof(ResponseDTO<object>), StatusCodes.Status201Created)]
+        [ProducesResponseType(typeof(ResponseDTO<CategoryMinimalResponse>), StatusCodes.Status201Created)]
         [ProducesResponseType(typeof(object), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ResponseDTO<object>), StatusCodes.Status500InternalServerError)]
         [Authorize(Roles = "Admin")]
@@ -111,8 +111,9 @@ namespace PRN232.NMS.API.Controllers
         {
             var entity = _mapper.Map<Category>(request);
             await _categoryService.CreateAsync(entity);
+            var created = _mapper.Map<CategoryMinimalResponse>(entity);
             return StatusCode(StatusCodes.Status201Created,
-                new ResponseDTO<object>("Category created successfully", true, null, null));
+                new ResponseDTO<CategoryMinimalResponse>("Category created successfully", true, created, null));
         }
 
         /// <summary>

@@ -96,6 +96,9 @@ namespace PRN232.NMS.Services
             existing.ParentCategoryId = updatedCategory.ParentCategoryId;
             existing.IsActive = updatedCategory.IsActive;
 
+            // Ép EF ghi thay đổi (tránh SaveChanges trả 0 khi không detect change với entity load kèm Include).
+            _unitOfWork.CategoryRepository.MarkAsModified(existing);
+
             var result = await _unitOfWork.SaveChangeWithTransactionAsync();
             if (result <= 0)
                 return "Update failed.";
